@@ -42,6 +42,7 @@ func (s *subtitleService) Search(input *subtitles.SubtitleSearchInput) (*subtitl
 
 	if len(naturalResult) > 0 {
 		searchId, err := searches.SearchDao.CreateOrUpdate(input.Text)
+
 		if err == nil {
 			return &subtitles.SearchSubtitleDTO{
 				SearchID:    searchId,
