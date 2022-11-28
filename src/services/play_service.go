@@ -28,7 +28,7 @@ func (s *playService) Create(req *plays.PlayCreateInput) utils.RestErrorI {
 
 func (s *playService) Seed() utils.RestErrorI {
 	for i := int64(1); i < 4; i++ {
-		startDate := time.Date(2022, 10, 1, 0, 0, 0, 0, time.UTC)
+		startDate := time.Date(2022, 10, 6, 20, 31, 0, 0, time.UTC)
 		for j := int64(0); j < 4000000; j++ {
 			numberOfPlays := rand.Int63n(15)
 			for k := int64(0); k < numberOfPlays; k++ {
@@ -38,7 +38,7 @@ func (s *playService) Seed() utils.RestErrorI {
 					CreatedAt: startDate.Format("2006-01-02 15:04:05"),
 				})
 
-				startDate = startDate.Add(time.Duration(rand.Int63n(60)) * time.Second)
+				startDate = startDate.Add(time.Duration(rand.Int63n(20)) * time.Second)
 			}
 			//Jump ahead
 			j += rand.Int63n(500)
