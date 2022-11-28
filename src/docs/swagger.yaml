@@ -1,0 +1,20 @@
+basePath: /
+host: localhost:5000
+info:
+  contact: {}
+  description: Proof of Concept for BEIS AAR API
+  title: BEIS AAR API
+  version: "1.0"
+paths:
+  /:
+    get:
+      description: Returns a 200 response if the system is running
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "500":
+          description: ""
+      summary: Health Check
+swagger: "2.0"

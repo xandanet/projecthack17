@@ -1,0 +1,5 @@
+.idea
+*.log
+.env
+go_build_podcast_src.exe
+
