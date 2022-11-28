@@ -54,10 +54,17 @@ func (app *App) SetupRoutes() {
 
 	v1Routes := app.Router.Group("/v1")
 
-	//Installations
-	installationsRoutes := v1Routes.Group("podcasts")
+	//Podcasts
+	podcastRoutes := v1Routes.Group("podcasts")
 	{
-		installationsRoutes.GET("/text", controllers.SubtitleController.List)
-		installationsRoutes.GET("/search", controllers.SubtitleController.Search)
+		podcastRoutes.GET("/text", controllers.SubtitleController.List)
+		podcastRoutes.GET("/search", controllers.SubtitleController.Search)
+	}
+
+	//Plays
+	playsRoutes := v1Routes.Group("plays")
+	{
+		playsRoutes.POST("", controllers.PlayController.Create)
+		playsRoutes.POST("/seed", controllers.PlayController.Seed)
 	}
 }
