@@ -11,6 +11,7 @@ import (
 type subtitleControllerInterface interface {
 	List(ctx *gin.Context)
 	Search(ctx *gin.Context)
+	Topics(ctx *gin.Context)
 }
 
 type subtitleController struct{}
@@ -50,6 +51,20 @@ func (c *subtitleController) Search(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, utils.NoErrorData{
 		Data: result,
+		Code: http.StatusOK,
+	})
+}
+
+func (c *subtitleController) Topics(ctx *gin.Context) {
+	err := services.SubtitleService.ParseAllPodcasts()
+
+	if err != nil {
+		ctx.JSON(err.Code(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, utils.NoErrorData{
+		Data: "PODCASTS_PARSED",
 		Code: http.StatusOK,
 	})
 }

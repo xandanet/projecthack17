@@ -9,7 +9,9 @@ import (
 
 type SubtitleDaoI interface {
 	List() ([]SubtitleDTO, error)
-	ListTextOnly() ([]string, error)
+	ListByPodcast(podcastID int64) ([]SubtitleDTO, error)
+	ListAllText() ([]string, error)
+	ListTextOnly(podcastID int64) ([]string, error)
 	SearchByText(search string) (*SubtitleDTO, error)
 	SearchByNaturalSearch(search string) ([]SubtitleDTO, error)
 }
@@ -33,11 +35,41 @@ func (d *subtitleDao) List() ([]SubtitleDTO, error) {
 	return results, nil
 }
 
-func (d *subtitleDao) ListTextOnly() ([]string, error) {
+func (d *subtitleDao) ListByPodcast(podcastID int64) ([]SubtitleDTO, error) {
+	var results []SubtitleDTO
+
+	// Get the records
+	if err := mysql.Client.Select(&results, queryListByPodcast, podcastID); err != nil {
+		if err != sql.ErrNoRows {
+			zlog.Logger.Error(fmt.Sprintf("SubtitleDao=>ListByPodcast=>Select: %s", err))
+			return nil, err
+		}
+		return nil, nil
+	}
+
+	return results, nil
+}
+
+func (d *subtitleDao) ListAllText() ([]string, error) {
 	var results []string
 
 	// Get the records
-	if err := mysql.Client.Select(&results, queryListTextOnly); err != nil {
+	if err := mysql.Client.Select(&results, queryListAllText); err != nil {
+		if err != sql.ErrNoRows {
+			zlog.Logger.Error(fmt.Sprintf("SubtitleDao=>ListAllText=>Select: %s", err))
+			return nil, err
+		}
+		return nil, nil
+	}
+
+	return results, nil
+}
+
+func (d *subtitleDao) ListTextOnly(podcastID int64) ([]string, error) {
+	var results []string
+
+	// Get the records
+	if err := mysql.Client.Select(&results, queryListTextOnly, podcastID); err != nil {
 		if err != sql.ErrNoRows {
 			zlog.Logger.Error(fmt.Sprintf("SubtitleDao=>ListTextOnly=>Select: %s", err))
 			return nil, err

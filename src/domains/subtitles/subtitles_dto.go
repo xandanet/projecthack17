@@ -21,3 +21,24 @@ type TextSearchAnalysis struct {
 	Text       string
 	Similarity float64
 }
+
+type ParagraphAnalysis struct {
+	Topics     []Topic
+	Paragraphs []ParagraphInformation
+}
+
+type ParagraphInformation struct {
+	ParagraphID int64
+	Topic       int64
+	Score       float64
+}
+
+type Topic struct {
+	ID    int64
+	Words []TopicWords
+}
+
+type TopicWords struct {
+	Text  string
+	Score float64
+}

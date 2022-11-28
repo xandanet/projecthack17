@@ -85,3 +85,13 @@ func ConvertStringToInt64(s string) int64 {
 
 	return iValue
 }
+
+func StringInMap(search string, haystack []string) bool {
+	for _, t := range haystack {
+		if t == search {
+			return true
+		}
+	}
+
+	return false
+}

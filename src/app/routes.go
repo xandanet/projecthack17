@@ -59,5 +59,7 @@ func (app *App) SetupRoutes() {
 	{
 		installationsRoutes.GET("/text", controllers.SubtitleController.List)
 		installationsRoutes.GET("/search", controllers.SubtitleController.Search)
+		installationsRoutes.GET("/topics", controllers.SubtitleController.Topics)
+
 	}
 }
