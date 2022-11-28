@@ -5,6 +5,7 @@ import (
 	"github.com/james-bowman/nlp"
 	"github.com/james-bowman/nlp/measures/pairwise"
 	"gonum.org/v1/gonum/mat"
+	"podcast/src/domains/searches"
 	"podcast/src/domains/subtitles"
 	"podcast/src/utils"
 	"sort"
@@ -14,7 +15,8 @@ var stopWords = []string{"a", "about", "above", "above", "across", "after", "aft
 
 type SubtitleServiceI interface {
 	List() ([]subtitles.SubtitleDTO, utils.RestErrorI)
-	Search(input *subtitles.SubtitleSearchInput) ([]subtitles.SubtitleDTO, utils.RestErrorI)
+	Search(input *subtitles.SubtitleSearchInput) (*subtitles.SearchSubtitleDTO, utils.RestErrorI)
+	GetContent(input *subtitles.SubtitleContentInput) (*subtitles.SubtitleDTO, utils.RestErrorI)
 }
 
 type subtitleService struct{}
@@ -30,17 +32,25 @@ func (s *subtitleService) List() ([]subtitles.SubtitleDTO, utils.RestErrorI) {
 	return result, nil
 }
 
-func (s *subtitleService) Search(input *subtitles.SubtitleSearchInput) ([]subtitles.SubtitleDTO, utils.RestErrorI) {
+func (s *subtitleService) Search(input *subtitles.SubtitleSearchInput) (*subtitles.SearchSubtitleDTO, utils.RestErrorI) {
 	//Do a natural search first
+	var naturalResult []subtitles.SubtitleDTO
 	naturalResult, err := subtitles.SubtitleDao.SearchByNaturalSearch(input.Text)
 	if err != nil {
 		return nil, utils.NewInternalServerError(utils.ErrorGetSearch)
 	}
 
 	if len(naturalResult) > 0 {
-		return naturalResult, nil
+		searchId, err := searches.SearchDao.CreateOrUpdate(input.Text)
+		if err == nil {
+			return &subtitles.SearchSubtitleDTO{
+				SearchID:    searchId,
+				SubtitleDTO: naturalResult,
+			}, nil
+		}
+		return nil, utils.NewInternalServerError(utils.ErrorSaveSearch)
 	}
-	
+
 	textOnly, err := subtitles.SubtitleDao.ListTextOnly()
 	if err != nil {
 		return nil, utils.NewInternalServerError(utils.ErrorGetList)
@@ -65,7 +75,11 @@ func (s *subtitleService) Search(input *subtitles.SubtitleSearchInput) ([]subtit
 		return results[i].Similarity > results[j].Similarity
 	})
 
-	return results, nil
+	searchId, err := searches.SearchDao.CreateOrUpdate(input.Text)
+	return &subtitles.SearchSubtitleDTO{
+		SearchID:    searchId,
+		SubtitleDTO: results,
+	}, nil
 }
 
 func (s *subtitleService) searchInText(query string, testCorpus []string, minSimilarity float64) []subtitles.TextSearchAnalysis {
@@ -108,4 +122,8 @@ func (s *subtitleService) searchInText(query string, testCorpus []string, minSim
 	}
 
 	return matched
+}
+
+func (s *subtitleService) GetContent(input *subtitles.SubtitleContentInput) (*subtitles.SubtitleDTO, utils.RestErrorI) {
+	return nil, nil
 }

@@ -11,6 +11,7 @@ import (
 type subtitleControllerInterface interface {
 	List(ctx *gin.Context)
 	Search(ctx *gin.Context)
+	GetContent(ctx *gin.Context)
 }
 
 type subtitleController struct{}
@@ -42,6 +43,29 @@ func (c *subtitleController) Search(ctx *gin.Context) {
 	}
 
 	result, err := services.SubtitleService.Search(&input)
+
+	if err != nil {
+		ctx.JSON(err.Code(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, utils.NoErrorData{
+		Data: result,
+		Code: http.StatusOK,
+	})
+}
+
+func (c *subtitleController) GetContent(ctx *gin.Context) {
+	var input subtitles.SubtitleContentInput
+
+	if ok := utils.GinShouldPassAll(ctx,
+		utils.GinShouldBind(&input),
+		utils.GinShouldValidate(&input),
+	); !ok {
+		return
+	}
+
+	result, err := services.SubtitleService.GetContent(&input)
 
 	if err != nil {
 		ctx.JSON(err.Code(), err)

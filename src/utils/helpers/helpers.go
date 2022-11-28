@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -84,4 +86,30 @@ func ConvertStringToInt64(s string) int64 {
 	}
 
 	return iValue
+}
+
+// ConvertStructToMap converts a struct to a map using the structs tags.
+// ConvertStructToMap uses tags on struct fields to decide which fields to add to the returned map
+func ConvertStructToMap(in interface{}, tag string) (map[string]interface{}, error) {
+	out := make(map[string]interface{})
+
+	v := reflect.ValueOf(in)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	// we only accept structs
+	if v.Kind() != reflect.Struct {
+		return nil, fmt.Errorf("ConvertStructToMap only accepts structs; got %T", v)
+	}
+
+	typ := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		// gets us a StructField
+		fi := typ.Field(i)
+		if tagv := fi.Tag.Get(tag); tagv != "" {
+			out[tagv] = v.Field(i).Interface()
+		}
+	}
+	return out, nil
 }

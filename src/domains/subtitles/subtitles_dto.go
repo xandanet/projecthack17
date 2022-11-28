@@ -21,3 +21,13 @@ type TextSearchAnalysis struct {
 	Text       string
 	Similarity float64
 }
+
+type SearchSubtitleDTO struct {
+	SearchID    int64
+	SubtitleDTO []SubtitleDTO
+}
+
+type SubtitleContentInput struct {
+	SubtitleId int64 `json:"subtitleId" form:"subtitle_id" validate:"required"`
+	SearchId   int64 `json:"searchId" form:"search_id" validate:"required"`
+}
