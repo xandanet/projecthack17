@@ -38,7 +38,7 @@ func (s *playService) Seed() utils.RestErrorI {
 					CreatedAt: startDate.Format("2006-01-02 15:04:05"),
 				})
 
-				startDate = startDate.Add(time.Duration(rand.Int63n(60)) * time.Hour)
+				startDate = startDate.Add(time.Duration(rand.Int63n(60)) * time.Second)
 			}
 			//Jump ahead
 			j += rand.Int63n(500)
