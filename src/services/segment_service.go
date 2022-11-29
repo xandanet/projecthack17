@@ -16,7 +16,7 @@ var stopWords = []string{"a", "about", "above", "above", "across", "after", "aft
 type SegmentServiceI interface {
 	List() ([]segments.SegmentDTO, utils.RestErrorI)
 	Search(input *segments.SegmentSearchInput) (*segments.SearchSubtitleDTO, utils.RestErrorI)
-	GetContent(input *segments.SubtitleContentInput) (*segments.SegmentDTO, utils.RestErrorI)
+	GetContent(input *segments.SearchSubtitleInput) (*segments.SearchSubtitleOutput, utils.RestErrorI)
 }
 
 type segmentService struct{}
@@ -42,6 +42,7 @@ func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.S
 
 	if len(naturalResult) > 0 {
 		searchId, err := searches.SearchDao.CreateOrUpdate(input.Text)
+
 		if err == nil {
 			return &segments.SearchSubtitleDTO{
 				SearchID:    searchId,
@@ -124,6 +125,20 @@ func (s *segmentService) searchInText(query string, testCorpus []string, minSimi
 	return matched
 }
 
-func (s *segmentService) GetContent(input *segments.SubtitleContentInput) (*segments.SegmentDTO, utils.RestErrorI) {
-	return nil, nil
+func (s *segmentService) GetContent(input *segments.SearchSubtitleInput) (*segments.SearchSubtitleOutput, utils.RestErrorI) {
+	_, err := segments.SegmentDao.GetByID(input.SubtitleId)
+	if err != nil {
+		return nil, utils.NewInternalServerError(utils.ErrorGetList)
+	}
+
+	_, err = searches.SearchDao.GetByID(input.SearchId)
+	if err != nil {
+		return nil, utils.NewInternalServerError(utils.ErrorGetList)
+	}
+
+	result, err := segments.SegmentDao.CreateSearchLog(input)
+	if err != nil {
+		return nil, utils.NewInternalServerError(utils.ErrorGetList)
+	}
+	return result, nil
 }

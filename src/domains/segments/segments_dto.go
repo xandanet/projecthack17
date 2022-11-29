@@ -27,7 +27,16 @@ type SearchSubtitleDTO struct {
 	SubtitleDTO []SegmentDTO
 }
 
-type SubtitleContentInput struct {
+type SearchSubtitleInput struct {
 	SubtitleId int64 `json:"subtitleId" form:"subtitle_id" validate:"required"`
 	SearchId   int64 `json:"searchId" form:"search_id" validate:"required"`
+}
+
+type SearchSubtitleOutput struct {
+	ID           int64 `db:"id"`
+	SubtitleId   int64 `db:"subtitle_id"`
+	SearchId     int64 `db:"search_id"`
+	ClickCount   int64 `db:"click_count"`
+	FirstClicked int64 `db:"first_clicked"`
+	LastClicked  int64 `db:"last_clicked"`
 }

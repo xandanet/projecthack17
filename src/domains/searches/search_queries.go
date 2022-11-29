@@ -1,11 +1,13 @@
 package searches
 
 const (
-	queryList = `SELECT id, text, count, last_updated FROM search;`
+	queryList = `SELECT id, text, search_count, last_updated FROM search;`
 
 	queryCreate = `INSERT INTO search (text) VALUES (:text)`
 
 	queryUpdateCount = `UPDATE search SET search_count = search_count+1 WHERE text = ?`
 
-	queryFind = `SELECT id,text,count FROM search WHERE text = ?`
+	queryFind = `SELECT id,text,search_count FROM search WHERE text = ?`
+
+	queryByID = `SELECT id,text,search_count FROM search WHERE id = ?`
 )
