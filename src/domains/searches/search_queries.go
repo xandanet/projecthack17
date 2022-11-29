@@ -1,7 +1,7 @@
 package searches
 
 const (
-	queryList = `SELECT id, text, search_count, last_updated FROM search;`
+	queryList = `SELECT id, text, search_count, last_searched FROM search;`
 
 	queryCreate = `INSERT INTO search (text, sentiment) VALUES (:text, :sentiment)`
 

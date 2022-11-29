@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"podcast/src/domains/searches"
 	"podcast/src/domains/segments"
 	"podcast/src/services"
 	"podcast/src/utils"
@@ -13,6 +14,7 @@ type segmentControllerInterface interface {
 	Search(ctx *gin.Context)
 	GetContent(ctx *gin.Context)
 	SearchGenerator(ctx *gin.Context)
+	Statistics(ctx *gin.Context)
 }
 
 type segmentController struct{}
@@ -98,6 +100,22 @@ func (c *segmentController) SearchGenerator(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, utils.NoErrorData{
 		Data: "DONE",
+		Code: http.StatusOK,
+	})
+}
+
+func (c *segmentController) Statistics(ctx *gin.Context) {
+	var result []searches.SearchDTO
+
+	result, err := services.SegmentService.Statistics()
+
+	if err != nil {
+		ctx.JSON(err.Code(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, utils.NoErrorData{
+		Data: result,
 		Code: http.StatusOK,
 	})
 }
