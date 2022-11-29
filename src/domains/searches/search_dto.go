@@ -2,7 +2,7 @@ package searches
 
 type SearchDTO struct {
 	ID          int64  `db:"id"`
-	Text        int64  `db:"text"`
+	Text        string `db:"text"`
 	SearchCount int64  `db:"search_count"`
 	LastUpdated string `db:"last_updated"`
 }

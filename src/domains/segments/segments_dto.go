@@ -11,8 +11,12 @@ type SegmentDTO struct {
 	Speaker    nulls.String `db:"speaker"`
 	Sentiment  nulls.String `db:"sentiment"`
 	Similarity float64      `db:"similarity"`
+	Plays      int64        `db:"plays"`
 }
 
+type SegmentListInput struct {
+	PodcastID int64 `json:"podcast_id" form:"podcast_id" validate:"required"`
+}
 type SegmentSearchInput struct {
 	Text string `json:"text" form:"text" validate:"required"`
 }
@@ -28,15 +32,15 @@ type SearchSubtitleDTO struct {
 }
 
 type SearchSubtitleInput struct {
-	SubtitleId int64 `json:"subtitleId" form:"subtitle_id" validate:"required"`
-	SearchId   int64 `json:"searchId" form:"search_id" validate:"required"`
+	SubtitleId int64 `db:"subtitle_id" json:"subtitle_id" form:"subtitle_id" validate:"required"`
+	SearchId   int64 `db:"search_id" json:"search_id" form:"search_id" validate:"required"`
 }
 
 type SearchSubtitleOutput struct {
-	ID           int64 `db:"id"`
-	SubtitleId   int64 `db:"subtitle_id"`
-	SearchId     int64 `db:"search_id"`
-	ClickCount   int64 `db:"click_count"`
-	FirstClicked int64 `db:"first_clicked"`
-	LastClicked  int64 `db:"last_clicked"`
+	ID           int64  `db:"id"`
+	SubtitleId   int64  `db:"subtitle_id"`
+	SearchId     int64  `db:"search_id"`
+	ClickCount   int64  `db:"click_count"`
+	FirstClicked string `db:"first_clicked"`
+	LastClicked  string `db:"last_clicked"`
 }

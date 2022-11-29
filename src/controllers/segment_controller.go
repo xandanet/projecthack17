@@ -12,6 +12,7 @@ type segmentControllerInterface interface {
 	List(ctx *gin.Context)
 	Search(ctx *gin.Context)
 	GetContent(ctx *gin.Context)
+	SearchGenerator(ctx *gin.Context)
 }
 
 type segmentController struct{}
@@ -19,7 +20,16 @@ type segmentController struct{}
 var SegmentController segmentControllerInterface = &segmentController{}
 
 func (c *segmentController) List(ctx *gin.Context) {
-	result, err := services.SegmentService.List()
+	var input segments.SegmentListInput
+
+	if ok := utils.GinShouldPassAll(ctx,
+		utils.GinShouldBind(&input),
+		utils.GinShouldValidate(&input),
+	); !ok {
+		return
+	}
+
+	result, err := services.SegmentService.List(&input)
 
 	if err != nil {
 		ctx.JSON(err.Code(), err)
@@ -74,6 +84,20 @@ func (c *segmentController) GetContent(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, utils.NoErrorData{
 		Data: result,
+		Code: http.StatusOK,
+	})
+}
+
+func (c *segmentController) SearchGenerator(ctx *gin.Context) {
+	err := services.SegmentService.SearchGenerator()
+
+	if err != nil {
+		ctx.JSON(err.Code(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, utils.NoErrorData{
+		Data: "DONE",
 		Code: http.StatusOK,
 	})
 }

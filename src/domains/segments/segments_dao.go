@@ -10,7 +10,7 @@ import (
 
 type SegmentDaoI interface {
 	GetByID(id int64) (*SegmentDTO, error)
-	List() ([]SegmentDTO, error)
+	List(podcastID int64) ([]SegmentDTO, error)
 	ListTextOnly() ([]string, error)
 	SearchByText(search string) (*SegmentDTO, error)
 	SearchByNaturalSearch(search string) ([]SegmentDTO, error)
@@ -36,11 +36,11 @@ func (d *segmentDao) GetByID(id int64) (*SegmentDTO, error) {
 	return &segment, nil
 }
 
-func (d *segmentDao) List() ([]SegmentDTO, error) {
+func (d *segmentDao) List(podcastID int64) ([]SegmentDTO, error) {
 	var results []SegmentDTO
 
 	// Get the records
-	if err := mysql.Client.Select(&results, queryList); err != nil {
+	if err := mysql.Client.Select(&results, queryList, podcastID); err != nil {
 		if err != sql.ErrNoRows {
 			zlog.Logger.Error(fmt.Sprintf("SubtitleDao=>List=>Select: %s", err))
 			return nil, err
@@ -113,7 +113,7 @@ func (d *segmentDao) GetSearchLogByID(id int64) (*SearchSubtitleOutput, error) {
 
 func (d *segmentDao) CreateSearchLog(input *SearchSubtitleInput) (*SearchSubtitleOutput, error) {
 
-	var searchSubtitle *SearchSubtitleOutput
+	var searchSubtitle SearchSubtitleOutput
 	err := mysql.Client.Get(&searchSubtitle, querySearchBySubtitleIdSearchId, input.SubtitleId, input.SearchId)
 
 	if err == sql.ErrNoRows {
@@ -142,7 +142,7 @@ func (d *segmentDao) CreateSearchLog(input *SearchSubtitleInput) (*SearchSubtitl
 			zlog.Logger.Error(fmt.Sprintf("CreateDao=>Create: %s", err))
 			return nil, err
 		}
-		return searchSubtitle, nil
+		return &searchSubtitle, nil
 
 	} else {
 		_, err := mysql.Client.Exec(queryUpdateCount, input.SubtitleId, input.SearchId)
@@ -152,5 +152,5 @@ func (d *segmentDao) CreateSearchLog(input *SearchSubtitleInput) (*SearchSubtitl
 		}
 	}
 
-	return searchSubtitle, nil
+	return &searchSubtitle, nil
 }
