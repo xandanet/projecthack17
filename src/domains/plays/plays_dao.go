@@ -9,6 +9,8 @@ import (
 type PlayDaoI interface {
 	Create(req *PlayCreateInput) error
 	Statistics(req *PlayStatisticsInput) ([]PlayStatisticsOutput, error)
+	PerDay(req *PlayStatisticsPerDayInput) ([]PlayStatisticsPerDayOutput, error)
+	SegmentPopularity(req *PlayStatisticsPerDayInput) ([]PlaySegmentPopularityOutput, error)
 }
 
 type playDao struct{}
@@ -28,6 +30,28 @@ func (d *playDao) Statistics(req *PlayStatisticsInput) ([]PlayStatisticsOutput, 
 	var result []PlayStatisticsOutput
 
 	if err := mysql.Client.Select(&result, queryStatistics, req.PodcastID, req.StartDate, req.EndDate); err != nil {
+		zlog.Logger.Error(fmt.Sprintf("SubtitleDao=>Statistics=>Select: %s", err))
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (d *playDao) PerDay(req *PlayStatisticsPerDayInput) ([]PlayStatisticsPerDayOutput, error) {
+	var result []PlayStatisticsPerDayOutput
+
+	if err := mysql.Client.Select(&result, queryPerDay, req.PodcastID); err != nil {
+		zlog.Logger.Error(fmt.Sprintf("SubtitleDao=>Statistics=>Select: %s", err))
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (d *playDao) SegmentPopularity(req *PlayStatisticsPerDayInput) ([]PlaySegmentPopularityOutput, error) {
+	var result []PlaySegmentPopularityOutput
+
+	if err := mysql.Client.Select(&result, querySegmentPopularity, req.PodcastID); err != nil {
 		zlog.Logger.Error(fmt.Sprintf("SubtitleDao=>Statistics=>Select: %s", err))
 		return nil, err
 	}

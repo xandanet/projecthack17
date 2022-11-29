@@ -13,6 +13,8 @@ type PlayServiceI interface {
 	Create(req *plays.PlayCreateInput) utils.RestErrorI
 	Seed() utils.RestErrorI
 	Statistics(req *plays.PlayStatisticsInput) ([]plays.PlayStatisticsOutput, utils.RestErrorI)
+	PerDay(req *plays.PlayStatisticsPerDayInput) ([]plays.PlayStatisticsPerDayOutput, utils.RestErrorI)
+	SegmentPopularity(req *plays.PlayStatisticsPerDayInput) ([]plays.PlaySegmentPopularityOutput, utils.RestErrorI)
 }
 
 type playService struct{}
@@ -58,6 +60,22 @@ func (s *playService) Seed() utils.RestErrorI {
 
 func (s *playService) Statistics(req *plays.PlayStatisticsInput) ([]plays.PlayStatisticsOutput, utils.RestErrorI) {
 	result, err := plays.PlayDao.Statistics(req)
+	if err != nil {
+		return nil, utils.NewInternalServerError(err.Error())
+	}
+	return result, nil
+}
+
+func (s *playService) PerDay(req *plays.PlayStatisticsPerDayInput) ([]plays.PlayStatisticsPerDayOutput, utils.RestErrorI) {
+	result, err := plays.PlayDao.PerDay(req)
+	if err != nil {
+		return nil, utils.NewInternalServerError(err.Error())
+	}
+	return result, nil
+}
+
+func (s *playService) SegmentPopularity(req *plays.PlayStatisticsPerDayInput) ([]plays.PlaySegmentPopularityOutput, utils.RestErrorI) {
+	result, err := plays.PlayDao.SegmentPopularity(req)
 	if err != nil {
 		return nil, utils.NewInternalServerError(err.Error())
 	}
