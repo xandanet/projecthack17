@@ -1,4 +1,4 @@
-package subtitles
+package segments
 
 const (
 	queryList = `SELECT id, start, end, content, pod_id, speaker, sentiment FROM subtitle;`

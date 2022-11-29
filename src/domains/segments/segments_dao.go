@@ -1,4 +1,4 @@
-package subtitles
+package segments
 
 import (
 	"database/sql"
@@ -7,19 +7,19 @@ import (
 	"podcast/src/zlog"
 )
 
-type SubtitleDaoI interface {
-	List() ([]SubtitleDTO, error)
+type SegmentDaoI interface {
+	List() ([]SegmentDTO, error)
 	ListTextOnly() ([]string, error)
-	SearchByText(search string) (*SubtitleDTO, error)
-	SearchByNaturalSearch(search string) ([]SubtitleDTO, error)
+	SearchByText(search string) (*SegmentDTO, error)
+	SearchByNaturalSearch(search string) ([]SegmentDTO, error)
 }
 
-type subtitleDao struct{}
+type segmentDao struct{}
 
-var SubtitleDao SubtitleDaoI = &subtitleDao{}
+var SegmentDao SegmentDaoI = &segmentDao{}
 
-func (d *subtitleDao) List() ([]SubtitleDTO, error) {
-	var results []SubtitleDTO
+func (d *segmentDao) List() ([]SegmentDTO, error) {
+	var results []SegmentDTO
 
 	// Get the records
 	if err := mysql.Client.Select(&results, queryList); err != nil {
@@ -33,7 +33,7 @@ func (d *subtitleDao) List() ([]SubtitleDTO, error) {
 	return results, nil
 }
 
-func (d *subtitleDao) ListTextOnly() ([]string, error) {
+func (d *segmentDao) ListTextOnly() ([]string, error) {
 	var results []string
 
 	// Get the records
@@ -48,8 +48,8 @@ func (d *subtitleDao) ListTextOnly() ([]string, error) {
 	return results, nil
 }
 
-func (d *subtitleDao) SearchByText(search string) (*SubtitleDTO, error) {
-	var result SubtitleDTO
+func (d *segmentDao) SearchByText(search string) (*SegmentDTO, error) {
+	var result SegmentDTO
 
 	// Get the records
 	if err := mysql.Client.Get(&result, querySearchByText, search); err != nil {
@@ -63,8 +63,8 @@ func (d *subtitleDao) SearchByText(search string) (*SubtitleDTO, error) {
 	return &result, nil
 }
 
-func (d *subtitleDao) SearchByNaturalSearch(search string) ([]SubtitleDTO, error) {
-	var result []SubtitleDTO
+func (d *segmentDao) SearchByNaturalSearch(search string) ([]SegmentDTO, error) {
+	var result []SegmentDTO
 
 	// Get the records
 	if err := mysql.Client.Select(&result, querySearchByNaturalSearchText, search, search); err != nil {

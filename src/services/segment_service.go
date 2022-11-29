@@ -6,25 +6,25 @@ import (
 	"github.com/james-bowman/nlp/measures/pairwise"
 	"gonum.org/v1/gonum/mat"
 	"podcast/src/domains/searches"
-	"podcast/src/domains/subtitles"
+	"podcast/src/domains/segments"
 	"podcast/src/utils"
 	"sort"
 )
 
 var stopWords = []string{"a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all", "almost", "alone", "along", "already", "also", "although", "always", "am", "among", "amongst", "amoungst", "amount", "an", "and", "another", "any", "anyhow", "anyone", "anything", "anyway", "anywhere", "are", "around", "as", "at", "back", "be", "became", "because", "become", "becomes", "becoming", "been", "before", "beforehand", "behind", "being", "below", "beside", "besides", "between", "beyond", "bill", "both", "bottom", "but", "by", "call", "can", "cannot", "cant", "co", "con", "could", "couldnt", "cry", "de", "describe", "detail", "do", "done", "down", "due", "during", "each", "eg", "eight", "either", "eleven", "else", "elsewhere", "empty", "enough", "etc", "even", "ever", "every", "everyone", "everything", "everywhere", "except", "few", "fifteen", "fify", "fill", "find", "fire", "first", "five", "for", "former", "formerly", "forty", "found", "four", "from", "front", "full", "further", "get", "give", "go", "had", "has", "hasnt", "have", "he", "hence", "her", "here", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "him", "himself", "his", "how", "however", "hundred", "ie", "if", "in", "inc", "indeed", "interest", "into", "is", "it", "its", "itself", "keep", "last", "latter", "latterly", "least", "less", "ltd", "made", "many", "may", "me", "meanwhile", "might", "mill", "mine", "more", "moreover", "most", "mostly", "move", "much", "must", "my", "myself", "name", "namely", "neither", "never", "nevertheless", "next", "nine", "no", "nobody", "none", "noone", "nor", "not", "nothing", "now", "nowhere", "of", "off", "often", "on", "once", "one", "only", "onto", "or", "other", "others", "otherwise", "our", "ours", "ourselves", "out", "over", "own", "part", "per", "perhaps", "please", "put", "rather", "re", "same", "see", "seem", "seemed", "seeming", "seems", "serious", "several", "she", "should", "show", "side", "since", "sincere", "six", "sixty", "so", "some", "somehow", "someone", "something", "sometime", "sometimes", "somewhere", "still", "such", "system", "take", "ten", "than", "that", "the", "their", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "therefore", "therein", "thereupon", "these", "they", "thickv", "thin", "third", "this", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together", "too", "top", "toward", "towards", "twelve", "twenty", "two", "un", "under", "until", "up", "upon", "us", "very", "via", "was", "we", "well", "were", "what", "whatever", "when", "whence", "whenever", "where", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether", "which", "while", "whither", "who", "whoever", "whole", "whom", "whose", "why", "will", "with", "within", "without", "would", "yet", "you", "your", "yours", "yourself", "yourselves"}
 
-type SubtitleServiceI interface {
-	List() ([]subtitles.SubtitleDTO, utils.RestErrorI)
-	Search(input *subtitles.SubtitleSearchInput) (*subtitles.SearchSubtitleDTO, utils.RestErrorI)
-	GetContent(input *subtitles.SubtitleContentInput) (*subtitles.SubtitleDTO, utils.RestErrorI)
+type SegmentServiceI interface {
+	List() ([]segments.SegmentDTO, utils.RestErrorI)
+	Search(input *segments.SegmentSearchInput) (*segments.SearchSubtitleDTO, utils.RestErrorI)
+	GetContent(input *segments.SubtitleContentInput) (*segments.SegmentDTO, utils.RestErrorI)
 }
 
-type subtitleService struct{}
+type segmentService struct{}
 
-var SubtitleService SubtitleServiceI = &subtitleService{}
+var SegmentService SegmentServiceI = &segmentService{}
 
-func (s *subtitleService) List() ([]subtitles.SubtitleDTO, utils.RestErrorI) {
-	result, err := subtitles.SubtitleDao.List()
+func (s *segmentService) List() ([]segments.SegmentDTO, utils.RestErrorI) {
+	result, err := segments.SegmentDao.List()
 	if err != nil {
 		return nil, utils.NewInternalServerError(utils.ErrorGetList)
 	}
@@ -32,10 +32,10 @@ func (s *subtitleService) List() ([]subtitles.SubtitleDTO, utils.RestErrorI) {
 	return result, nil
 }
 
-func (s *subtitleService) Search(input *subtitles.SubtitleSearchInput) (*subtitles.SearchSubtitleDTO, utils.RestErrorI) {
+func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.SearchSubtitleDTO, utils.RestErrorI) {
 	//Do a natural search first
-	var naturalResult []subtitles.SubtitleDTO
-	naturalResult, err := subtitles.SubtitleDao.SearchByNaturalSearch(input.Text)
+	var naturalResult []segments.SegmentDTO
+	naturalResult, err := segments.SegmentDao.SearchByNaturalSearch(input.Text)
 	if err != nil {
 		return nil, utils.NewInternalServerError(utils.ErrorGetSearch)
 	}
@@ -43,7 +43,7 @@ func (s *subtitleService) Search(input *subtitles.SubtitleSearchInput) (*subtitl
 	if len(naturalResult) > 0 {
 		searchId, err := searches.SearchDao.CreateOrUpdate(input.Text)
 		if err == nil {
-			return &subtitles.SearchSubtitleDTO{
+			return &segments.SearchSubtitleDTO{
 				SearchID:    searchId,
 				SubtitleDTO: naturalResult,
 			}, nil
@@ -51,18 +51,18 @@ func (s *subtitleService) Search(input *subtitles.SubtitleSearchInput) (*subtitl
 		return nil, utils.NewInternalServerError(utils.ErrorSaveSearch)
 	}
 
-	textOnly, err := subtitles.SubtitleDao.ListTextOnly()
+	textOnly, err := segments.SegmentDao.ListTextOnly()
 	if err != nil {
 		return nil, utils.NewInternalServerError(utils.ErrorGetList)
 	}
 
-	var results []subtitles.SubtitleDTO
+	var results []segments.SegmentDTO
 
 	searchResults := s.searchInText(input.Text, textOnly, 0.9)
 
 	//Find the entries that match the results
 	for _, searchResult := range searchResults {
-		detail, err := subtitles.SubtitleDao.SearchByText(searchResult.Text)
+		detail, err := segments.SegmentDao.SearchByText(searchResult.Text)
 		if err != nil {
 			return nil, utils.NewInternalServerError(utils.ErrorGetSearch)
 		}
@@ -76,13 +76,13 @@ func (s *subtitleService) Search(input *subtitles.SubtitleSearchInput) (*subtitl
 	})
 
 	searchId, err := searches.SearchDao.CreateOrUpdate(input.Text)
-	return &subtitles.SearchSubtitleDTO{
+	return &segments.SearchSubtitleDTO{
 		SearchID:    searchId,
 		SubtitleDTO: results,
 	}, nil
 }
 
-func (s *subtitleService) searchInText(query string, testCorpus []string, minSimilarity float64) []subtitles.TextSearchAnalysis {
+func (s *segmentService) searchInText(query string, testCorpus []string, minSimilarity float64) []segments.TextSearchAnalysis {
 	vectoriser := nlp.NewCountVectoriser(stopWords...)
 	transformer := nlp.NewTfidfTransformer()
 
@@ -109,12 +109,12 @@ func (s *subtitleService) searchInText(query string, testCorpus []string, minSim
 	// iterate over document feature vectors (columns) in the LSI matrix and compare
 	// with the query vector for similarity.  Similarity is determined by the difference
 	// between the angles of the vectors known as the cosine similarity
-	var matched []subtitles.TextSearchAnalysis
+	var matched []segments.TextSearchAnalysis
 	_, docs := lsi.Dims()
 	for i := 0; i < docs; i++ {
 		similarity := pairwise.CosineSimilarity(queryVector.(mat.ColViewer).ColView(0), lsi.(mat.ColViewer).ColView(i))
 		if similarity >= minSimilarity {
-			matched = append(matched, subtitles.TextSearchAnalysis{
+			matched = append(matched, segments.TextSearchAnalysis{
 				Text:       testCorpus[i],
 				Similarity: similarity,
 			})
@@ -124,6 +124,6 @@ func (s *subtitleService) searchInText(query string, testCorpus []string, minSim
 	return matched
 }
 
-func (s *subtitleService) GetContent(input *subtitles.SubtitleContentInput) (*subtitles.SubtitleDTO, utils.RestErrorI) {
+func (s *segmentService) GetContent(input *segments.SubtitleContentInput) (*segments.SegmentDTO, utils.RestErrorI) {
 	return nil, nil
 }

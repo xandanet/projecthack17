@@ -1,8 +1,8 @@
-package subtitles
+package segments
 
 import "github.com/gobuffalo/nulls"
 
-type SubtitleDTO struct {
+type SegmentDTO struct {
 	ID         int64        `db:"id"`
 	Start      int64        `db:"start"`
 	End        int64        `db:"end"`
@@ -13,7 +13,7 @@ type SubtitleDTO struct {
 	Similarity float64      `db:"similarity"`
 }
 
-type SubtitleSearchInput struct {
+type SegmentSearchInput struct {
 	Text string `json:"text" form:"text" validate:"required"`
 }
 
@@ -24,7 +24,7 @@ type TextSearchAnalysis struct {
 
 type SearchSubtitleDTO struct {
 	SearchID    int64
-	SubtitleDTO []SubtitleDTO
+	SubtitleDTO []SegmentDTO
 }
 
 type SubtitleContentInput struct {
