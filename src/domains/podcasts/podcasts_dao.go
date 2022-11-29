@@ -10,6 +10,7 @@ import (
 type PodcastDaoI interface {
 	GetMaxDuration() ([]PodcastDuration, error)
 	List() ([]PodcastDTO, error)
+	Single(id int64) (*PodcastDTO, error)
 	Interventions(id int64) ([]PodcastInterventionsOutput, error)
 	Sentiment(id int64) ([]PodcastSentimentOutput, error)
 }
@@ -45,6 +46,21 @@ func (d *podcastDao) List() ([]PodcastDTO, error) {
 	}
 
 	return results, nil
+}
+
+func (d *podcastDao) Single(id int64) (*PodcastDTO, error) {
+	var result PodcastDTO
+
+	// Get the records
+	if err := mysql.Client.Get(&result, querySingle, id); err != nil {
+		if err != sql.ErrNoRows {
+			zlog.Logger.Error(fmt.Sprintf("PodcastDao=>Single=>Get: %s", err))
+			return nil, err
+		}
+		return nil, nil
+	}
+
+	return &result, nil
 }
 
 func (d *podcastDao) Interventions(id int64) ([]PodcastInterventionsOutput, error) {
