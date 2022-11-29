@@ -11,7 +11,7 @@ import (
 type SearchDaoI interface {
 	GetByID(id int64) (*SearchDTO, error)
 	Find(text string) (*SearchDTO, error)
-	CreateOrUpdate(text string) (int64, error)
+	CreateOrUpdate(text string, sentiment string) (int64, error)
 	List() ([]SearchDTO, error)
 }
 type searchDao struct{}
@@ -46,14 +46,15 @@ func (s searchDao) Find(text string) (*SearchDTO, error) {
 	return &search, nil
 }
 
-func (s searchDao) CreateOrUpdate(text string) (int64, error) {
+func (s searchDao) CreateOrUpdate(text string, sentiment string) (int64, error) {
 	var search SearchDTO
 	err := mysql.Client.Get(&search, queryFind, text)
 
 	if err == sql.ErrNoRows {
 
 		searchInput := SearchInput{
-			Text: text,
+			Text:      text,
+			Sentiment: sentiment,
 		}
 
 		qMap, err := helpers.ConvertStructToMap(searchInput, "db")

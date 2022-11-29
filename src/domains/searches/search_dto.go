@@ -8,5 +8,6 @@ type SearchDTO struct {
 }
 
 type SearchInput struct {
-	Text string ` db:"text"`
+	Text      string `db:"text"`
+	Sentiment string `db:"sentiment"`
 }
