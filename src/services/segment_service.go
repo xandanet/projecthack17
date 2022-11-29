@@ -46,7 +46,7 @@ func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.S
 	if sentiment.Compound >= 0.05 {
 		sentimentText = "Positive"
 	}
-	if sentiment.Compound <= 0.05 {
+	if sentiment.Compound <= -0.05 {
 		sentimentText = "Negative"
 	}
 
