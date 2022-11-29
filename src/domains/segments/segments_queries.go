@@ -19,6 +19,14 @@ const (
 		WHERE MATCH (content) AGAINST (? IN BOOLEAN MODE) + MATCH (pods.title, pods.description) AGAINST (? IN BOOLEAN MODE)
 		ORDER BY similarity DESC;`
 
+	querySearchSubtitlesByNaturalSearch = `SELECT segment.id, section.start, section.end, pod_id, section.content, section.speaker, sentiment, pods.title AS podcast,
+    	MATCH (section.content) AGAINST (? IN BOOLEAN MODE) AS similarity
+		FROM section
+		LEFT JOIN segment ON segment.id = subtitle_id
+    	LEFT JOIN pods ON (pods.id = segment.pod_id)
+		WHERE MATCH (section.content) AGAINST (? IN BOOLEAN MODE)
+		ORDER BY similarity DESC;`
+
 	queryGetByID = `SELECT id, start, end, pod_id, content, speaker, sentiment FROM segment WHERE id = ?`
 
 	queryGetSearchBySubtitleByID = `SELECT id, segment_id,search_id,click_count,first_clicked,last_clicked FROM search_segment WHERE id = ?`

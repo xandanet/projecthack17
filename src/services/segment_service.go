@@ -20,6 +20,7 @@ var stopWords = []string{"a", "about", "above", "above", "across", "after", "aft
 type SegmentServiceI interface {
 	List(req *segments.SegmentListInput) ([]segments.SegmentDTO, utils.RestErrorI)
 	Search(input *segments.SegmentSearchInput) (*segments.SearchSegmentDTO, utils.RestErrorI)
+	SearchSubtitles(input *segments.SegmentSearchInput) ([]segments.SegmentDTO, utils.RestErrorI)
 	GetContent(input *segments.SearchSegmentInput) (*segments.SegmentDTO, utils.RestErrorI)
 	SearchGenerator() utils.RestErrorI
 }
@@ -98,6 +99,16 @@ func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.S
 		SearchID:   searchId,
 		SegmentDTO: results,
 	}, nil
+}
+
+func (s *segmentService) SearchSubtitles(input *segments.SegmentSearchInput) ([]segments.SegmentDTO, utils.RestErrorI) {
+	var naturalResult []segments.SegmentDTO
+	naturalResult, err := segments.SegmentDao.SearchSubtitlesByNaturalSearch(input.Text)
+	if err != nil {
+		return nil, utils.NewInternalServerError(utils.ErrorGetSearch)
+	}
+
+	return naturalResult, nil
 }
 
 func (s *segmentService) searchInText(query string, testCorpus []string, minSimilarity float64) []segments.TextSearchAnalysis {
