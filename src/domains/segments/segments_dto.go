@@ -11,8 +11,12 @@ type SegmentDTO struct {
 	Speaker    nulls.String `db:"speaker"`
 	Sentiment  nulls.String `db:"sentiment"`
 	Similarity float64      `db:"similarity"`
+	Plays      int64        `db:"plays"`
 }
 
+type SegmentListInput struct {
+	PodcastID int64 `json:"podcast_id" form:"podcast_id" validate:"required"`
+}
 type SegmentSearchInput struct {
 	Text string `json:"text" form:"text" validate:"required"`
 }

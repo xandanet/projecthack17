@@ -10,7 +10,7 @@ import (
 
 type SegmentDaoI interface {
 	GetByID(id int64) (*SegmentDTO, error)
-	List() ([]SegmentDTO, error)
+	List(podcastID int64) ([]SegmentDTO, error)
 	ListTextOnly() ([]string, error)
 	SearchByText(search string) (*SegmentDTO, error)
 	SearchByNaturalSearch(search string) ([]SegmentDTO, error)
@@ -36,11 +36,11 @@ func (d *segmentDao) GetByID(id int64) (*SegmentDTO, error) {
 	return &segment, nil
 }
 
-func (d *segmentDao) List() ([]SegmentDTO, error) {
+func (d *segmentDao) List(podcastID int64) ([]SegmentDTO, error) {
 	var results []SegmentDTO
 
 	// Get the records
-	if err := mysql.Client.Select(&results, queryList); err != nil {
+	if err := mysql.Client.Select(&results, queryList, podcastID); err != nil {
 		if err != sql.ErrNoRows {
 			zlog.Logger.Error(fmt.Sprintf("SubtitleDao=>List=>Select: %s", err))
 			return nil, err
@@ -96,7 +96,7 @@ func (d *segmentDao) SearchByNaturalSearch(search string) ([]SegmentDTO, error) 
 	return result, nil
 }
 
-func (d segmentDao) GetSearchLogByID(id int64) (*SearchSegmentOutput, error) {
+func (d *segmentDao) GetSearchLogByID(id int64) (*SearchSegmentOutput, error) {
 	var searchSubtitle SearchSegmentOutput
 
 	err := mysql.Client.Get(&searchSubtitle, queryGetSearchBySubtitleByID, id)
@@ -111,9 +111,7 @@ func (d segmentDao) GetSearchLogByID(id int64) (*SearchSegmentOutput, error) {
 }
 
 func (d *segmentDao) CreateSearchLog(input *SearchSegmentInput) (*SearchSegmentOutput, error) {
-
 	var searchSegment SearchSegmentOutput
-
 	if err := mysql.Client.Get(&searchSegment, querySearchBySubtitleIdSearchId, input.SegmentId, input.SearchId); err == sql.ErrNoRows {
 
 		qMap, err := helpers.ConvertStructToMap(input, "db")
@@ -139,8 +137,8 @@ func (d *segmentDao) CreateSearchLog(input *SearchSegmentInput) (*SearchSegmentO
 			zlog.Logger.Error(fmt.Sprintf("CreateDao=>Create: %s", err))
 			return nil, err
 		}
-		return &searchSegment, nil
 
+		return &searchSegment, nil
 	} else {
 
 		_, err := mysql.Client.Exec(queryUpdateCount, input.SegmentId, input.SearchId)
@@ -150,5 +148,4 @@ func (d *segmentDao) CreateSearchLog(input *SearchSegmentInput) (*SearchSegmentO
 		}
 	}
 	return &searchSegment, nil
-
 }

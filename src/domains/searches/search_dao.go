@@ -47,7 +47,6 @@ func (s searchDao) Find(text string) (*SearchDTO, error) {
 }
 
 func (s searchDao) CreateOrUpdate(text string) (int64, error) {
-
 	var search SearchDTO
 	err := mysql.Client.Get(&search, queryFind, text)
 
@@ -64,7 +63,6 @@ func (s searchDao) CreateOrUpdate(text string) (int64, error) {
 		}
 
 		row, err := mysql.Client.NamedExec(queryCreate, qMap)
-		fmt.Println(row)
 		if err != nil {
 			zlog.Logger.Error(fmt.Sprintf("CreateDao=>Create: %s", err))
 			return 0, err

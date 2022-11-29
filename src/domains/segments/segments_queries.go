@@ -1,15 +1,17 @@
 package segments
 
 const (
-	queryList = `SELECT id, start, end, content, pod_id, speaker, sentiment FROM segment;`
+	queryList = `SELECT id, start, end, content, pod_id, speaker, sentiment,
+       (SELECT COUNT(*) FROM plays WHERE podcast_id = segment.pod_id AND position BETWEEN segment.start AND segment.end) AS plays
+       FROM segment WHERE pod_id = ?;`
 
 	queryListTextOnly = `SELECT content FROM segment LIMIT 100;`
 
 	querySearchByText = `SELECT id, start, end, pod_id, content, speaker, sentiment FROM segment WHERE content = ?;`
 
 	querySearchByNaturalSearchText = `SELECT id, start, end, pod_id, content, speaker, sentiment,
-    	MATCH (content) AGAINST (? IN NATURAL LANGUAGE MODE) AS similarity FROM segment
-		WHERE MATCH (content) AGAINST (? IN NATURAL LANGUAGE MODE);`
+    	MATCH (content) AGAINST (? IN BOOLEAN MODE) AS similarity FROM segment
+		WHERE MATCH (content) AGAINST (? IN BOOLEAN MODE);`
 
 	queryGetByID = `SELECT id, start, end, pod_id, content, speaker, sentiment FROM segment WHERE id = ?`
 

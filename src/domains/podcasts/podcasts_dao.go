@@ -9,6 +9,9 @@ import (
 
 type PodcastDaoI interface {
 	GetMaxDuration() ([]PodcastDuration, error)
+	List() ([]PodcastDTO, error)
+	Interventions(id int64) ([]PodcastInterventionsOutput, error)
+	Sentiment(id int64) ([]PodcastSentimentOutput, error)
 }
 
 type podcastDao struct{}
@@ -27,4 +30,49 @@ func (d *podcastDao) GetMaxDuration() ([]PodcastDuration, error) {
 	}
 
 	return durations, nil
+}
+
+func (d *podcastDao) List() ([]PodcastDTO, error) {
+	var results []PodcastDTO
+
+	// Get the records
+	if err := mysql.Client.Select(&results, queryList); err != nil {
+		if err != sql.ErrNoRows {
+			zlog.Logger.Error(fmt.Sprintf("PodcastDao=>List=>Select: %s", err))
+			return nil, err
+		}
+		return nil, nil
+	}
+
+	return results, nil
+}
+
+func (d *podcastDao) Interventions(id int64) ([]PodcastInterventionsOutput, error) {
+	var results []PodcastInterventionsOutput
+
+	// Get the records
+	if err := mysql.Client.Select(&results, queryInterventions, id); err != nil {
+		if err != sql.ErrNoRows {
+			zlog.Logger.Error(fmt.Sprintf("PodcastDao=>Interventions=>Select: %s", err))
+			return nil, err
+		}
+		return nil, nil
+	}
+
+	return results, nil
+}
+
+func (d *podcastDao) Sentiment(id int64) ([]PodcastSentimentOutput, error) {
+	var results []PodcastSentimentOutput
+
+	// Get the records
+	if err := mysql.Client.Select(&results, querySentiment, id); err != nil {
+		if err != sql.ErrNoRows {
+			zlog.Logger.Error(fmt.Sprintf("PodcastDao=>Sentiment=>Select: %s", err))
+			return nil, err
+		}
+		return nil, nil
+	}
+
+	return results, nil
 }
