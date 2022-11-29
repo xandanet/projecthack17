@@ -9,9 +9,12 @@ const (
 
 	querySearchByText = `SELECT id, start, end, pod_id, content, speaker, sentiment FROM segment WHERE content = ?;`
 
-	querySearchByNaturalSearchText = `SELECT id, start, end, pod_id, content, speaker, sentiment,
-    	MATCH (content) AGAINST (? IN BOOLEAN MODE) AS similarity FROM segment
-		WHERE MATCH (content) AGAINST (? IN BOOLEAN MODE);`
+	querySearchByNaturalSearchText = `SELECT segment.id, start, end, pod_id, content, speaker, sentiment,
+    	MATCH (content) AGAINST (? IN BOOLEAN MODE) + MATCH (pods.title, pods.description) AGAINST (? IN BOOLEAN MODE) AS similarity
+		FROM segment
+    	LEFT JOIN pods ON (pods.id = segment.pod_id)
+		WHERE MATCH (content) AGAINST (? IN BOOLEAN MODE) + MATCH (pods.title, pods.description) AGAINST (? IN BOOLEAN MODE)
+		ORDER BY similarity DESC;`
 
 	queryGetByID = `SELECT id, start, end, pod_id, content, speaker, sentiment FROM segment WHERE id = ?`
 

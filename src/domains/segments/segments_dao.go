@@ -85,7 +85,7 @@ func (d *segmentDao) SearchByNaturalSearch(search string) ([]SegmentDTO, error) 
 	var result []SegmentDTO
 
 	// Get the records
-	if err := mysql.Client.Select(&result, querySearchByNaturalSearchText, search, search); err != nil {
+	if err := mysql.Client.Select(&result, querySearchByNaturalSearchText, search, search, search, search); err != nil {
 		if err != sql.ErrNoRows {
 			zlog.Logger.Error(fmt.Sprintf("SegmentDao=>SearchByNaturalSearch=>Select: %s", err))
 			return nil, err
