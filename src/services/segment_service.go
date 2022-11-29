@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/james-bowman/nlp"
 	"github.com/james-bowman/nlp/measures/pairwise"
+	"github.com/jonreiter/govader"
 	"golang.org/x/exp/rand"
 	"gonum.org/v1/gonum/mat"
 	"podcast/src/domains/keywords"
@@ -37,6 +38,18 @@ func (s *segmentService) List(req *segments.SegmentListInput) ([]segments.Segmen
 }
 
 func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.SearchSegmentDTO, utils.RestErrorI) {
+	//Get the sentiment
+	analyzer := govader.NewSentimentIntensityAnalyzer()
+	sentiment := analyzer.PolarityScores(input.Text)
+
+	sentimentText := "Neutral"
+	if sentiment.Compound >= 0.05 {
+		sentimentText = "Positive"
+	}
+	if sentiment.Compound <= -0.05 {
+		sentimentText = "Negative"
+	}
+
 	//Do a natural search first
 	var naturalResult []segments.SegmentDTO
 	naturalResult, err := segments.SegmentDao.SearchByNaturalSearch(input.Text)
@@ -45,7 +58,7 @@ func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.S
 	}
 
 	if len(naturalResult) > 0 {
-		searchId, err := searches.SearchDao.CreateOrUpdate(input.Text)
+		searchId, err := searches.SearchDao.CreateOrUpdate(input.Text, sentimentText)
 
 		if err == nil {
 			return &segments.SearchSegmentDTO{
@@ -80,7 +93,7 @@ func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.S
 		return results[i].Similarity > results[j].Similarity
 	})
 
-	searchId, err := searches.SearchDao.CreateOrUpdate(input.Text)
+	searchId, err := searches.SearchDao.CreateOrUpdate(input.Text, sentimentText)
 	return &segments.SearchSegmentDTO{
 		SearchID:   searchId,
 		SegmentDTO: results,

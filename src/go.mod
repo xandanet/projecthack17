@@ -11,6 +11,7 @@ require (
 	github.com/james-bowman/nlp v0.0.0-20210511120306-26d441fa0ded
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/joho/godotenv v1.4.0
+	github.com/jonreiter/govader v0.0.0-20220408022859-68ffa1d6eff4
 	github.com/lib/pq v1.10.7
 	github.com/oschwald/geoip2-golang v1.8.0
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a
