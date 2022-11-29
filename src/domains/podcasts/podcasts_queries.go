@@ -15,5 +15,5 @@ const (
 
 	querySelectBookmarkbyPodId = `SELECT pod_id,position,notes FROM bookmark WHERE pod_id = ?;`
 
-	queryCreateBookmark = `INSERT INTO bookmarks (pod_id,position,notes) VALUES (:pod_id,:position,:notes)`
+	queryCreateBookmark = `INSERT INTO bookmark (pod_id,position,notes) VALUES (:pod_id,:position,:notes)`
 )
