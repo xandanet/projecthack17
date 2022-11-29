@@ -10,4 +10,10 @@ const (
 	queryFind = `SELECT id,text,search_count FROM search WHERE text = ?`
 
 	queryByID = `SELECT id,text,search_count FROM search WHERE id = ?`
+
+	queryTopSegmentFromSearch = `SELECT SUM(click_count) AS total, segment.id, start, end, content, pod_id, pods.title AS podcast
+		FROM search_segment 
+		LEFT JOIN segment ON segment.id = segment_id
+		LEFT JOIN pods ON pods.id = pod_id
+		GROUP BY segment_id ORDER BY total DESC LIMIT ?`
 )
