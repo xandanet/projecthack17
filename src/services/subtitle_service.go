@@ -16,7 +16,7 @@ var stopWords = []string{"a", "about", "above", "above", "across", "after", "aft
 type SubtitleServiceI interface {
 	List() ([]subtitles.SubtitleDTO, utils.RestErrorI)
 	Search(input *subtitles.SubtitleSearchInput) (*subtitles.SearchSubtitleDTO, utils.RestErrorI)
-	GetContent(input *subtitles.SubtitleContentInput) (*subtitles.SubtitleDTO, utils.RestErrorI)
+	GetContent(input *subtitles.SearchSubtitleInput) (*subtitles.SearchSubtitleOutput, utils.RestErrorI)
 }
 
 type subtitleService struct{}
@@ -125,6 +125,21 @@ func (s *subtitleService) searchInText(query string, testCorpus []string, minSim
 	return matched
 }
 
-func (s *subtitleService) GetContent(input *subtitles.SubtitleContentInput) (*subtitles.SubtitleDTO, utils.RestErrorI) {
-	return nil, nil
+func (s *subtitleService) GetContent(input *subtitles.SearchSubtitleInput) (*subtitles.SearchSubtitleOutput, utils.RestErrorI) {
+
+	_, err := subtitles.SubtitleDao.GetByID(input.SubtitleId)
+	if err != nil {
+		return nil, utils.NewInternalServerError(utils.ErrorGetList)
+	}
+
+	_, err = searches.SearchDao.GetByID(input.SearchId)
+	if err != nil {
+		return nil, utils.NewInternalServerError(utils.ErrorGetList)
+	}
+
+	result, err := subtitles.SubtitleDao.CreateSearchLog(input)
+	if err != nil {
+		return nil, utils.NewInternalServerError(utils.ErrorGetList)
+	}
+	return result, nil
 }

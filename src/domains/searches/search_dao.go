@@ -9,6 +9,7 @@ import (
 )
 
 type SearchDaoI interface {
+	GetByID(id int64) (*SearchDTO, error)
 	Find(text string) (*SearchDTO, error)
 	CreateOrUpdate(text string) (int64, error)
 	List() ([]SearchDTO, error)
@@ -16,6 +17,20 @@ type SearchDaoI interface {
 type searchDao struct{}
 
 var SearchDao SearchDaoI = &searchDao{}
+
+func (s searchDao) GetByID(id int64) (*SearchDTO, error) {
+	var search SearchDTO
+
+	err := mysql.Client.Get(&search, queryByID, id)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			zlog.Logger.Error(fmt.Sprintf("SearchDao=>GetByID: %s", err))
+		}
+		return nil, err
+	}
+
+	return &search, nil
+}
 
 func (s searchDao) Find(text string) (*SearchDTO, error) {
 	var search SearchDTO
