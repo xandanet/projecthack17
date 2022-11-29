@@ -56,7 +56,7 @@ func (c *segmentController) Search(ctx *gin.Context) {
 }
 
 func (c *segmentController) GetContent(ctx *gin.Context) {
-	var input segments.SearchSubtitleInput
+	var input segments.SearchSegmentInput
 
 	if ok := utils.GinShouldPassAll(ctx,
 		utils.GinShouldBind(&input),

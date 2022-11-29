@@ -14,8 +14,8 @@ type SegmentDaoI interface {
 	ListTextOnly() ([]string, error)
 	SearchByText(search string) (*SegmentDTO, error)
 	SearchByNaturalSearch(search string) ([]SegmentDTO, error)
-	GetSearchLogByID(id int64) (*SearchSubtitleOutput, error)
-	CreateSearchLog(input *SearchSubtitleInput) (*SearchSubtitleOutput, error)
+	GetSearchLogByID(id int64) (*SearchSegmentOutput, error)
+	CreateSearchLog(input *SearchSegmentInput) (*SearchSegmentOutput, error)
 }
 
 type segmentDao struct{}
@@ -72,7 +72,7 @@ func (d *segmentDao) SearchByText(search string) (*SegmentDTO, error) {
 	// Get the records
 	if err := mysql.Client.Get(&result, querySearchByText, search); err != nil {
 		if err != sql.ErrNoRows {
-			zlog.Logger.Error(fmt.Sprintf("SubtitleDao=>SearchByText=>Select: %s", err))
+			zlog.Logger.Error(fmt.Sprintf("SegmentDao=>SearchByText=>Select: %s", err))
 			return nil, err
 		}
 		return nil, nil
@@ -87,7 +87,7 @@ func (d *segmentDao) SearchByNaturalSearch(search string) ([]SegmentDTO, error) 
 	// Get the records
 	if err := mysql.Client.Select(&result, querySearchByNaturalSearchText, search, search); err != nil {
 		if err != sql.ErrNoRows {
-			zlog.Logger.Error(fmt.Sprintf("SubtitleDao=>SearchByNaturalSearch=>Select: %s", err))
+			zlog.Logger.Error(fmt.Sprintf("SegmentDao=>SearchByNaturalSearch=>Select: %s", err))
 			return nil, err
 		}
 		return nil, nil
@@ -96,8 +96,8 @@ func (d *segmentDao) SearchByNaturalSearch(search string) ([]SegmentDTO, error) 
 	return result, nil
 }
 
-func (d segmentDao) GetSearchLogByID(id int64) (*SearchSubtitleOutput, error) {
-	var searchSubtitle SearchSubtitleOutput
+func (d segmentDao) GetSearchLogByID(id int64) (*SearchSegmentOutput, error) {
+	var searchSubtitle SearchSegmentOutput
 
 	err := mysql.Client.Get(&searchSubtitle, queryGetSearchBySubtitleByID, id)
 	if err != nil {
@@ -110,46 +110,45 @@ func (d segmentDao) GetSearchLogByID(id int64) (*SearchSubtitleOutput, error) {
 	return &searchSubtitle, nil
 }
 
-func (d *segmentDao) CreateSearchLog(input *SearchSubtitleInput) (*SearchSubtitleOutput, error) {
+func (d *segmentDao) CreateSearchLog(input *SearchSegmentInput) (*SearchSegmentOutput, error) {
 
-	var searchSubtitle *SearchSubtitleOutput
-	err := mysql.Client.Get(&searchSubtitle, querySearchBySubtitleIdSearchId, input.SubtitleId, input.SearchId)
+	var searchSegment SearchSegmentOutput
 
-	if err == sql.ErrNoRows {
+	if err := mysql.Client.Get(&searchSegment, querySearchBySubtitleIdSearchId, input.SegmentId, input.SearchId); err == sql.ErrNoRows {
 
 		qMap, err := helpers.ConvertStructToMap(input, "db")
 		if err != nil {
-			zlog.Logger.Error(fmt.Sprintf("CreateDao=>Create: %s", err))
+			zlog.Logger.Error(fmt.Sprintf("SegmentDao=>Create: %s", err))
 			return nil, err
 		}
 
 		row, err := mysql.Client.NamedExec(queryCreateSearchSubtitle, qMap)
-		fmt.Println(row)
 		if err != nil {
-			zlog.Logger.Error(fmt.Sprintf("CreateDao=>Create: %s", err))
+			zlog.Logger.Error(fmt.Sprintf("SegmentDao=>Create: %s", err))
 			return nil, err
 		}
 
 		id, err := row.LastInsertId()
 		if err != nil {
-			zlog.Logger.Error(fmt.Sprintf("CreateDao=>Create: %s", err))
+			zlog.Logger.Error(fmt.Sprintf("SegmentDao=>Create: %s", err))
 			return nil, err
 		}
 
-		err = mysql.Client.Get(&searchSubtitle, queryGetSearchBySubtitleByID, id)
+		err = mysql.Client.Get(&searchSegment, queryGetSearchBySubtitleByID, id)
 		if err != nil {
 			zlog.Logger.Error(fmt.Sprintf("CreateDao=>Create: %s", err))
 			return nil, err
 		}
-		return searchSubtitle, nil
+		return &searchSegment, nil
 
 	} else {
-		_, err := mysql.Client.Exec(queryUpdateCount, input.SubtitleId, input.SearchId)
+
+		_, err := mysql.Client.Exec(queryUpdateCount, input.SegmentId, input.SearchId)
 		if err != nil {
-			zlog.Logger.Error(fmt.Sprintf("SearchDao=>Update: %s", err))
+			zlog.Logger.Error(fmt.Sprintf("SegmentDao=>UpdateCount: %s", err))
 			return nil, err
 		}
 	}
+	return &searchSegment, nil
 
-	return searchSubtitle, nil
 }

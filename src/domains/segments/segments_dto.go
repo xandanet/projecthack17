@@ -22,21 +22,21 @@ type TextSearchAnalysis struct {
 	Similarity float64
 }
 
-type SearchSubtitleDTO struct {
-	SearchID    int64
-	SubtitleDTO []SegmentDTO
+type SearchSegmentDTO struct {
+	SearchID   int64
+	SegmentDTO []SegmentDTO
 }
 
-type SearchSubtitleInput struct {
-	SubtitleId int64 `json:"subtitleId" form:"subtitle_id" validate:"required"`
-	SearchId   int64 `json:"searchId" form:"search_id" validate:"required"`
+type SearchSegmentInput struct {
+	SegmentId int64 `json:"segmentId" db:"segment_id" form:"segment_id" validate:"required"`
+	SearchId  int64 `json:"searchId" db:"search_id" form:"search_id" validate:"required"`
 }
 
-type SearchSubtitleOutput struct {
-	ID           int64 `db:"id"`
-	SubtitleId   int64 `db:"subtitle_id"`
-	SearchId     int64 `db:"search_id"`
-	ClickCount   int64 `db:"click_count"`
-	FirstClicked int64 `db:"first_clicked"`
-	LastClicked  int64 `db:"last_clicked"`
+type SearchSegmentOutput struct {
+	ID           int64  `db:"id"`
+	SegmentId    int64  `db:"segment_id"`
+	SearchId     int64  `db:"search_id"`
+	ClickCount   int64  `db:"click_count"`
+	FirstClicked string `db:"first_clicked"`
+	LastClicked  string `db:"last_clicked"`
 }

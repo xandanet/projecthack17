@@ -15,8 +15,8 @@ var stopWords = []string{"a", "about", "above", "above", "across", "after", "aft
 
 type SegmentServiceI interface {
 	List() ([]segments.SegmentDTO, utils.RestErrorI)
-	Search(input *segments.SegmentSearchInput) (*segments.SearchSubtitleDTO, utils.RestErrorI)
-	GetContent(input *segments.SearchSubtitleInput) (*segments.SearchSubtitleOutput, utils.RestErrorI)
+	Search(input *segments.SegmentSearchInput) (*segments.SearchSegmentDTO, utils.RestErrorI)
+	GetContent(input *segments.SearchSegmentInput) (*segments.SegmentDTO, utils.RestErrorI)
 }
 
 type segmentService struct{}
@@ -32,7 +32,7 @@ func (s *segmentService) List() ([]segments.SegmentDTO, utils.RestErrorI) {
 	return result, nil
 }
 
-func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.SearchSubtitleDTO, utils.RestErrorI) {
+func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.SearchSegmentDTO, utils.RestErrorI) {
 	//Do a natural search first
 	var naturalResult []segments.SegmentDTO
 	naturalResult, err := segments.SegmentDao.SearchByNaturalSearch(input.Text)
@@ -44,9 +44,9 @@ func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.S
 		searchId, err := searches.SearchDao.CreateOrUpdate(input.Text)
 
 		if err == nil {
-			return &segments.SearchSubtitleDTO{
-				SearchID:    searchId,
-				SubtitleDTO: naturalResult,
+			return &segments.SearchSegmentDTO{
+				SearchID:   searchId,
+				SegmentDTO: naturalResult,
 			}, nil
 		}
 		return nil, utils.NewInternalServerError(utils.ErrorSaveSearch)
@@ -77,9 +77,9 @@ func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.S
 	})
 
 	searchId, err := searches.SearchDao.CreateOrUpdate(input.Text)
-	return &segments.SearchSubtitleDTO{
-		SearchID:    searchId,
-		SubtitleDTO: results,
+	return &segments.SearchSegmentDTO{
+		SearchID:   searchId,
+		SegmentDTO: results,
 	}, nil
 }
 
@@ -125,20 +125,26 @@ func (s *segmentService) searchInText(query string, testCorpus []string, minSimi
 	return matched
 }
 
-func (s *segmentService) GetContent(input *segments.SearchSubtitleInput) (*segments.SearchSubtitleOutput, utils.RestErrorI) {
-	_, err := segments.SegmentDao.GetByID(input.SubtitleId)
+func (s *segmentService) GetContent(input *segments.SearchSegmentInput) (*segments.SegmentDTO, utils.RestErrorI) {
+	_, err := segments.SegmentDao.GetByID(input.SegmentId)
 	if err != nil {
-		return nil, utils.NewInternalServerError(utils.ErrorGetList)
+		return nil, utils.NewInternalServerError("SEGMENT_NOT_FOUND")
 	}
 
 	_, err = searches.SearchDao.GetByID(input.SearchId)
 	if err != nil {
-		return nil, utils.NewInternalServerError(utils.ErrorGetList)
+		return nil, utils.NewInternalServerError("SEARCH_NOT_FOUND")
 	}
 
-	result, err := segments.SegmentDao.CreateSearchLog(input)
+	_, err = segments.SegmentDao.CreateSearchLog(input)
+	if err != nil {
+		return nil, utils.NewInternalServerError("ERROR_CREATING_SEARCH_LOG")
+	}
+
+	result, err := segments.SegmentDao.GetByID(input.SegmentId)
 	if err != nil {
 		return nil, utils.NewInternalServerError(utils.ErrorGetList)
 	}
+
 	return result, nil
 }
