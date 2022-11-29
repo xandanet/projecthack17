@@ -5,11 +5,14 @@ const (
        (SELECT COUNT(*) FROM plays WHERE podcast_id = segment.pod_id AND position BETWEEN segment.start AND segment.end) AS plays
        FROM segment WHERE pod_id = ?;`
 
-	queryListTextOnly = `SELECT content FROM segment LIMIT 100;`
+	queryListTextOnly = `SELECT content FROM segment;`
 
-	querySearchByText = `SELECT id, start, end, pod_id, content, speaker, sentiment FROM segment WHERE content = ?;`
+	querySearchByText = `SELECT id, start, end, pod_id, content, speaker, sentiment, pods.title AS podcast
+		FROM segment
+		LEFT JOIN pods ON (pods.id = segment.pod_id)
+		WHERE content = ?;`
 
-	querySearchByNaturalSearchText = `SELECT segment.id, start, end, pod_id, content, speaker, sentiment,
+	querySearchByNaturalSearchText = `SELECT segment.id, start, end, pod_id, content, speaker, sentiment, pods.title AS podcast,
     	MATCH (content) AGAINST (? IN BOOLEAN MODE) + MATCH (pods.title, pods.description) AGAINST (? IN BOOLEAN MODE) AS similarity
 		FROM segment
     	LEFT JOIN pods ON (pods.id = segment.pod_id)

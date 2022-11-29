@@ -12,6 +12,7 @@ type SegmentDTO struct {
 	Sentiment  nulls.String `db:"sentiment"`
 	Similarity float64      `db:"similarity"`
 	Plays      int64        `db:"plays"`
+	Podcast    string       `db:"podcast"`
 }
 
 type SegmentListInput struct {

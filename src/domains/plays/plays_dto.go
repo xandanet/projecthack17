@@ -23,3 +23,19 @@ type PlayStatisticsOutput struct {
 	Count     int64 `db:"total" json:"count"`
 	Timestamp int64 `db:"position" json:"timestamp"`
 }
+
+type PlayStatisticsPerDayInput struct {
+	PodcastID int64 `json:"podcast_id" form:"podcast_id" validate:"required"`
+}
+
+type PlayStatisticsPerDayOutput struct {
+	Count int64  `db:"total" json:"count"`
+	Date  string `db:"date" json:"date"`
+}
+
+type PlaySegmentPopularityOutput struct {
+	SegmentID int64 `db:"segment_id" json:"segment_id"`
+	Start     int64 `db:"start" json:"start"`
+	End       int64 `db:"end" json:"end"`
+	Plays     int64 `db:"plays" json:"plays"`
+}
