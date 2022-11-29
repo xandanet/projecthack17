@@ -21,3 +21,9 @@ type TopSearchesOutput struct {
 	Total     int64  `db:"total"`
 	Podcast   string `db:"podcast"`
 }
+
+type SearchLocationsOutput struct {
+	City     string `db:"city" json:"city"`
+	Country  string `db:"country" json:"country"`
+	Searches int64  `db:"searches" json:"searches"`
+}

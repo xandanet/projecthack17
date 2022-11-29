@@ -84,6 +84,11 @@ func (app *App) SetupRoutes() {
 		playsRoutes.GET("/segment-popularity", controllers.PlayController.SegmentPopularity)
 	}
 
+	searchRoutes := v1Routes.Group("searches")
+	{
+		searchRoutes.GET("/locations", controllers.SearchController.ListLocations)
+	}
+
 	v1Routes.GET("fake-locations", func(context *gin.Context) {
 		regions := []string{"Avon", "Bedfordshire", "Berkshire", "Buckinghamshire", "Cambridgeshire", "Cheshire", "Cleveland", "Cornwall", "Cumbria", "Derbyshire", "Devon", "Dorset", "Durham", "East-Sussex", "Essex", "Gloucestershire", "Hampshire", "Herefordshire", "Hertfordshire", "Isle-of-Wight", "Kent", "Lancashire", "Leicestershire", "Lincolnshire", "London", "Merseyside", "Middlesex", "Norfolk", "Northamptonshire", "Northumberland", "North-Humberside", "North-Yorkshire", "Nottinghamshire", "Oxfordshire", "Rutland", "Shropshire", "Somerset", "South-Humberside", "South-Yorkshire", "Staffordshire", "Suffolk", "Surrey", "Tyne-and-Wear", "Warwickshire", "West-Midlands", "West-Sussex", "West-Yorkshire", "Wiltshire", "Worcestershire"}
 		startDate := time.Date(2022, 11, 1, 0, 0, 0, 0, time.UTC)

@@ -16,4 +16,6 @@ const (
 		LEFT JOIN segment ON segment.id = segment_id
 		LEFT JOIN pods ON pods.id = pod_id
 		GROUP BY segment_id ORDER BY total DESC LIMIT ?`
+
+	queryGetSearchLocations = `SELECT city, country, count(*) AS searches FROM search_log GROUP BY city`
 )
