@@ -14,6 +14,8 @@ type podcastControllerInterface interface {
 	Subtitles(ctx *gin.Context)
 	Interventions(ctx *gin.Context)
 	Sentiment(ctx *gin.Context)
+	BookMark(ctx *gin.Context)
+	GetBookMark(ctx *gin.Context)
 }
 
 type podcastController struct{}
@@ -91,6 +93,52 @@ func (c *podcastController) Sentiment(ctx *gin.Context) {
 	}
 
 	result, err := services.PodcastService.Sentiment(input.ID)
+
+	if err != nil {
+		ctx.JSON(err.Code(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, utils.NoErrorData{
+		Data: result,
+		Code: http.StatusOK,
+	})
+}
+
+func (c *podcastController) BookMark(ctx *gin.Context) {
+	var input podcasts.BookmarkInput
+
+	if ok := utils.GinShouldPassAll(ctx,
+		utils.GinShouldBind(&input),
+		utils.GinShouldValidate(&input),
+	); !ok {
+		return
+	}
+
+	err := services.PodcastService.Bookmark(input)
+
+	if err != nil {
+		ctx.JSON(err.Code(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, utils.NoErrorData{
+		Data: "BOOKMARK SAVED",
+		Code: http.StatusOK,
+	})
+}
+
+func (c *podcastController) GetBookMark(ctx *gin.Context) {
+	var input podcasts.BookmarkSearchInput
+
+	if ok := utils.GinShouldPassAll(ctx,
+		utils.GinShouldBind(&input),
+		utils.GinShouldValidate(&input),
+	); !ok {
+		return
+	}
+
+	result, err := services.PodcastService.GetBookmark(input)
 
 	if err != nil {
 		ctx.JSON(err.Code(), err)

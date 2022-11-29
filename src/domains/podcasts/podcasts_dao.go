@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"podcast/src/clients/mysql"
+	"podcast/src/utils/helpers"
 	"podcast/src/zlog"
 )
 
@@ -12,6 +13,8 @@ type PodcastDaoI interface {
 	List() ([]PodcastDTO, error)
 	Interventions(id int64) ([]PodcastInterventionsOutput, error)
 	Sentiment(id int64) ([]PodcastSentimentOutput, error)
+	CreateBookmark(input BookmarkInput) error
+	GetBookmark(id int64) ([]GetBookmarkSearchOutput, error)
 }
 
 type podcastDao struct{}
@@ -69,6 +72,37 @@ func (d *podcastDao) Sentiment(id int64) ([]PodcastSentimentOutput, error) {
 	if err := mysql.Client.Select(&results, querySentiment, id); err != nil {
 		if err != sql.ErrNoRows {
 			zlog.Logger.Error(fmt.Sprintf("PodcastDao=>Sentiment=>Select: %s", err))
+			return nil, err
+		}
+		return nil, nil
+	}
+
+	return results, nil
+}
+
+func (d *podcastDao) CreateBookmark(input BookmarkInput) error {
+	qMap, err := helpers.ConvertStructToMap(input, "db")
+	if err != nil {
+		zlog.Logger.Error(fmt.Sprintf("SegmentDao=>Create: %s", err))
+		return err
+	}
+
+	_, err = mysql.Client.NamedExec(queryCreateBookmark, qMap)
+	if err != nil {
+		zlog.Logger.Error(fmt.Sprintf("SegmentDao=>Create: %s", err))
+		return err
+	}
+
+	return nil
+}
+
+func (d *podcastDao) GetBookmark(id int64) ([]GetBookmarkSearchOutput, error) {
+	var results []GetBookmarkSearchOutput
+
+	// Get the records
+	if err := mysql.Client.Select(&results, querySelectBookmarkbyPodId, id); err != nil {
+		if err != sql.ErrNoRows {
+			zlog.Logger.Error(fmt.Sprintf("PodcastDao=>GetBookmark=>Select: %s", err))
 			return nil, err
 		}
 		return nil, nil

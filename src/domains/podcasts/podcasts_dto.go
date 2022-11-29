@@ -12,8 +12,8 @@ type PodcastDTO struct {
 }
 
 type PodcastDuration struct {
-	ID       int64 `db:"pod_id"`
-	Duration int64 `db:"duration"`
+	ID       int64 `db:"pod_id" json:"pod_id"`
+	Duration int64 `db:"duration" json:"duration"`
 }
 
 type PodcastInput struct {
@@ -30,4 +30,20 @@ type PodcastInterventionsOutput struct {
 type PodcastSentimentOutput struct {
 	Start     int64  `db:"start" json:"start"`
 	Sentiment string `db:"sentiment" json:"sentiment"`
+}
+
+type BookmarkInput struct {
+	PodI     int64  `db:"pod_id" json:"pod_id" form:"pod_id" validate:"required"`
+	Position int64  `db:"position" json:"position" form:"position" validate:"required"`
+	Notes    string `db:"notes" json:"notes" form:"notes"`
+}
+
+type BookmarkSearchInput struct {
+	PodId int64 `json:"pod_id" form:"pod_id" validate:"required"`
+}
+
+type GetBookmarkSearchOutput struct {
+	PodID    int64  `db:"pod_id" json:"pod_id" form:"pod_id" validate:"required"`
+	Position int64  `db:"position" json:"position" form:"position" validate:"required"`
+	Notes    string `db:"notes" json:"notes" form:"notes" validate:"required"`
 }

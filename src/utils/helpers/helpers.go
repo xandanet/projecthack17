@@ -124,7 +124,7 @@ func GetLocationFromIp(ipAddress string) *geoip2.City {
 	}
 	defer db.Close()
 	// If you are using strings that may be invalid, check that ip is not nil
-	ip := net.ParseIP("81.2.69.142")
+	ip := net.ParseIP(ipAddress)
 	record, err := db.City(ip)
 	if err != nil {
 		log.Fatal(err)

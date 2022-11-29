@@ -67,6 +67,8 @@ func (app *App) SetupRoutes() {
 		podcastRoutes.POST("/content", controllers.SegmentController.GetContent)
 		podcastRoutes.POST("/search/content", controllers.SegmentController.GetContent)
 		podcastRoutes.GET("/search-generator", controllers.SegmentController.SearchGenerator)
+		podcastRoutes.POST("/bookmark", controllers.PodcastController.BookMark)
+		podcastRoutes.GET("/bookmark", controllers.PodcastController.GetBookMark)
 	}
 
 	//Plays

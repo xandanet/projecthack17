@@ -10,4 +10,8 @@ const (
 		FROM segment WHERE pod_id = ? GROUP BY speaker`
 
 	querySentiment = `SELECT start, sentiment FROM segment WHERE pod_id = ?;`
+
+	querySelectBookmarkbyPodId = `SELECT pod_id,position,notes FROM bookmark WHERE pod_id = ?;`
+
+	queryCreateBookmark = `INSERT INTO bookmarks (pod_id,position,notes) VALUES (:pod_id,:position,:notes)`
 )

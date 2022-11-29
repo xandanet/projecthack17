@@ -10,6 +10,8 @@ type PodcastServiceI interface {
 	List() ([]podcasts.PodcastDTO, utils.RestErrorI)
 	Interventions(id int64) ([]podcasts.PodcastInterventionsOutput, resterror.RestErrorI)
 	Sentiment(id int64) ([]podcasts.PodcastSentimentOutput, resterror.RestErrorI)
+	Bookmark(input podcasts.BookmarkInput) resterror.RestErrorI
+	GetBookmark(input podcasts.BookmarkSearchInput) ([]podcasts.GetBookmarkSearchOutput, resterror.RestErrorI)
 }
 
 type podcastService struct{}
@@ -51,4 +53,21 @@ func (s *podcastService) Sentiment(id int64) ([]podcasts.PodcastSentimentOutput,
 	}
 
 	return result, nil
+}
+
+func (s *podcastService) Bookmark(input podcasts.BookmarkInput) resterror.RestErrorI {
+	err := podcasts.PodcastDao.CreateBookmark(input)
+	if err != nil {
+		return utils.NewInternalServerError("ERROR_CREATING_BOOKMARK")
+	}
+	return nil
+}
+
+func (s *podcastService) GetBookmark(input podcasts.BookmarkSearchInput) ([]podcasts.GetBookmarkSearchOutput, resterror.RestErrorI) {
+	bookmarks, err := podcasts.PodcastDao.GetBookmark(input.PodId)
+
+	if err != nil {
+		return nil, utils.NewInternalServerError(utils.ErrorGetList)
+	}
+	return bookmarks, nil
 }

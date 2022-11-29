@@ -166,7 +166,7 @@ func (d *segmentDao) CreateSearchLog(input *SearchSegmentInput) (*SearchSegmentO
 
 	_, err = mysql.Client.NamedExec(queryCreateLog, qMap)
 	if err != nil {
-		zlog.Logger.Error(fmt.Sprintf("SegmentDao=>Create: %s", err))
+		zlog.Logger.Error(fmt.Sprintf("SegmentDao=>CreateSearchLog: %s", err))
 		return nil, err
 	}
 
