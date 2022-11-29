@@ -1,12 +1,15 @@
 package app
 
 import (
+	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"golang.org/x/exp/rand"
 	"net/http"
 	"os"
+	"podcast/src/clients/mysql"
 	"podcast/src/controllers"
 	"podcast/src/zlog"
 	"strings"
@@ -58,6 +61,7 @@ func (app *App) SetupRoutes() {
 	podcastRoutes := v1Routes.Group("podcasts")
 	{
 		podcastRoutes.GET("", controllers.PodcastController.List)
+		podcastRoutes.GET("/:id", controllers.PodcastController.Single)
 		podcastRoutes.GET("/subtitles", controllers.PodcastController.Subtitles)
 		podcastRoutes.GET("/interventions", controllers.PodcastController.Interventions)
 		podcastRoutes.GET("/sentiment", controllers.PodcastController.Sentiment)
@@ -69,6 +73,7 @@ func (app *App) SetupRoutes() {
 		podcastRoutes.GET("/search-generator", controllers.SegmentController.SearchGenerator)
 		podcastRoutes.POST("/bookmark", controllers.PodcastController.BookMark)
 		podcastRoutes.GET("/bookmark", controllers.PodcastController.GetBookMark)
+		podcastRoutes.GET("/top-searches", controllers.SegmentController.TopSearches)
 	}
 
 	//Plays
@@ -80,4 +85,22 @@ func (app *App) SetupRoutes() {
 		playsRoutes.GET("/per-day", controllers.PlayController.PerDay)
 		playsRoutes.GET("/segment-popularity", controllers.PlayController.SegmentPopularity)
 	}
+
+	searchRoutes := v1Routes.Group("searches")
+	{
+		searchRoutes.GET("/locations", controllers.SearchController.ListLocations)
+	}
+
+	v1Routes.GET("fake-locations", func(context *gin.Context) {
+		regions := []string{"Avon", "Bedfordshire", "Berkshire", "Buckinghamshire", "Cambridgeshire", "Cheshire", "Cleveland", "Cornwall", "Cumbria", "Derbyshire", "Devon", "Dorset", "Durham", "East-Sussex", "Essex", "Gloucestershire", "Hampshire", "Herefordshire", "Hertfordshire", "Isle-of-Wight", "Kent", "Lancashire", "Leicestershire", "Lincolnshire", "London", "Merseyside", "Middlesex", "Norfolk", "Northamptonshire", "Northumberland", "North-Humberside", "North-Yorkshire", "Nottinghamshire", "Oxfordshire", "Rutland", "Shropshire", "Somerset", "South-Humberside", "South-Yorkshire", "Staffordshire", "Suffolk", "Surrey", "Tyne-and-Wear", "Warwickshire", "West-Midlands", "West-Sussex", "West-Yorkshire", "Wiltshire", "Worcestershire"}
+		startDate := time.Date(2022, 11, 1, 0, 0, 0, 0, time.UTC)
+		for i := 0; i < 1000000; i++ {
+			_, err = mysql.Client.Exec(`INSERT INTO search_log(search_id, ip, region, city, country, search_date) 
+    					VALUES (1, "127.0.0.1", "", ?, "United Kingdom", ?)`, regions[rand.Int63n(int64(len(regions)))], startDate.Format("2006-01-02 15:04:05"))
+			if err != nil {
+				fmt.Println(err)
+			}
+			startDate = startDate.Add(time.Duration(rand.Int63n(20)) * time.Second)
+		}
+	})
 }

@@ -8,6 +8,7 @@ import (
 
 type PodcastServiceI interface {
 	List() ([]podcasts.PodcastDTO, utils.RestErrorI)
+	Single(id int64) (*podcasts.PodcastDTO, utils.RestErrorI)
 	Interventions(id int64) ([]podcasts.PodcastInterventionsOutput, resterror.RestErrorI)
 	Sentiment(id int64) ([]podcasts.PodcastSentimentOutput, resterror.RestErrorI)
 	Bookmark(input podcasts.BookmarkInput) resterror.RestErrorI
@@ -20,6 +21,15 @@ var PodcastService PodcastServiceI = &podcastService{}
 
 func (s *podcastService) List() ([]podcasts.PodcastDTO, utils.RestErrorI) {
 	result, err := podcasts.PodcastDao.List()
+	if err != nil {
+		return nil, utils.NewInternalServerError(utils.ErrorGetList)
+	}
+
+	return result, nil
+}
+
+func (s *podcastService) Single(id int64) (*podcasts.PodcastDTO, utils.RestErrorI) {
+	result, err := podcasts.PodcastDao.Single(id)
 	if err != nil {
 		return nil, utils.NewInternalServerError(utils.ErrorGetList)
 	}
