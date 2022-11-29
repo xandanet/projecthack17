@@ -13,13 +13,8 @@ type SearchInput struct {
 }
 
 type TopSearchesOutput struct {
-	ID        int64  `db:"id"`
-	Start     int64  `db:"start"`
-	End       int64  `db:"end"`
-	Content   string `db:"content"`
-	PodcastID int64  `db:"pod_id"`
-	Total     int64  `db:"total"`
-	Podcast   string `db:"podcast"`
+	Total   int64  `db:"total" json:"total"`
+	Keyword string `db:"text" json:"keyword"`
 }
 
 type SearchLocationsOutput struct {
