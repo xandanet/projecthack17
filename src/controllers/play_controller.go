@@ -11,6 +11,7 @@ import (
 type playControllerInterface interface {
 	Create(ctx *gin.Context)
 	Seed(ctx *gin.Context)
+	Statistics(ctx *gin.Context)
 }
 
 type playController struct{}
@@ -50,6 +51,29 @@ func (c *playController) Seed(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, utils.NoErrorData{
 		Data: "SEEDED",
+		Code: http.StatusOK,
+	})
+}
+
+func (c *playController) Statistics(ctx *gin.Context) {
+	var input plays.PlayStatisticsInput
+
+	if ok := utils.GinShouldPassAll(ctx,
+		utils.GinShouldBind(&input),
+		utils.GinShouldValidate(&input),
+	); !ok {
+		return
+	}
+
+	result, err := services.PlayService.Statistics(&input)
+
+	if err != nil {
+		ctx.JSON(err.Code(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, utils.NoErrorData{
+		Data: result,
 		Code: http.StatusOK,
 	})
 }

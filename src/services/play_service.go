@@ -3,6 +3,8 @@ package services
 import (
 	"golang.org/x/exp/rand"
 	"podcast/src/domains/plays"
+	"podcast/src/domains/podcasts"
+	"podcast/src/resterror"
 	"podcast/src/utils"
 	"time"
 )
@@ -10,6 +12,7 @@ import (
 type PlayServiceI interface {
 	Create(req *plays.PlayCreateInput) utils.RestErrorI
 	Seed() utils.RestErrorI
+	Statistics(req *plays.PlayStatisticsInput) ([]plays.PlayStatisticsOutput, utils.RestErrorI)
 }
 
 type playService struct{}
@@ -27,13 +30,18 @@ func (s *playService) Create(req *plays.PlayCreateInput) utils.RestErrorI {
 }
 
 func (s *playService) Seed() utils.RestErrorI {
-	for i := int64(1); i < 4; i++ {
-		startDate := time.Date(2022, 10, 6, 20, 31, 0, 0, time.UTC)
-		for j := int64(0); j < 4000000; j++ {
+	durations, err := podcasts.PodcastDao.GetMaxDuration()
+	if err != nil {
+		return resterror.NewBadRequestError(err.Error())
+	}
+
+	for _, duration := range durations {
+		startDate := time.Date(2022, 11, 1, 0, 0, 0, 0, time.UTC)
+		for j := int64(0); j < duration.Duration; j++ {
 			numberOfPlays := rand.Int63n(15)
 			for k := int64(0); k < numberOfPlays; k++ {
 				_ = plays.PlayDao.Create(&plays.PlayCreateInput{
-					PodcastID: i,
+					PodcastID: duration.ID,
 					Position:  j,
 					CreatedAt: startDate.Format("2006-01-02 15:04:05"),
 				})
@@ -46,4 +54,12 @@ func (s *playService) Seed() utils.RestErrorI {
 	}
 
 	return nil
+}
+
+func (s *playService) Statistics(req *plays.PlayStatisticsInput) ([]plays.PlayStatisticsOutput, utils.RestErrorI) {
+	result, err := plays.PlayDao.Statistics(req)
+	if err != nil {
+		return nil, utils.NewInternalServerError(err.Error())
+	}
+	return result, nil
 }
