@@ -8,8 +8,8 @@ const (
 	querySearchByText = `SELECT id, start, end, pod_id, content, speaker, sentiment FROM subtitle WHERE content = ?;`
 
 	querySearchByNaturalSearchText = `SELECT id, start, end, pod_id, content, speaker, sentiment,
-    	MATCH (content) AGAINST (? IN NATURAL LANGUAGE MODE) AS similarity FROM subtitle
-		WHERE MATCH (content) AGAINST (? IN NATURAL LANGUAGE MODE);`
+    	MATCH (content) AGAINST (? IN BOOLEAN MODE) AS similarity FROM subtitle
+		WHERE MATCH (content) AGAINST (? IN BOOLEAN MODE);`
 
 	queryGetByID = `SELECT id, start, end, pod_id, content, speaker, sentiment FROM subtitle WHERE id = ?`
 

@@ -67,5 +67,6 @@ func (app *App) SetupRoutes() {
 	{
 		playsRoutes.POST("", controllers.PlayController.Create)
 		playsRoutes.POST("/seed", controllers.PlayController.Seed)
+		playsRoutes.GET("/statistics", controllers.PlayController.Statistics)
 	}
 }
