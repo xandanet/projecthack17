@@ -58,6 +58,7 @@ func (app *App) SetupRoutes() {
 	podcastRoutes := v1Routes.Group("podcasts")
 	{
 		podcastRoutes.GET("", controllers.PodcastController.List)
+		podcastRoutes.GET("/subtitles", controllers.PodcastController.Subtitles)
 		podcastRoutes.GET("/interventions", controllers.PodcastController.Interventions)
 		podcastRoutes.GET("/sentiment", controllers.PodcastController.Sentiment)
 		podcastRoutes.GET("/text", controllers.SegmentController.List)
