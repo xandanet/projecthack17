@@ -1,13 +1,14 @@
 package podcasts
 
 type PodcastDTO struct {
-	ID          int64  `db:"id" json:"id"`
-	Title       string `db:"title" json:"title"`
-	Description string `db:"description" json:"description"`
-	Filename    string `db:"file_name" json:"filename"`
-	Season      int64  `db:"season" json:"season"`
-	Episode     int64  `db:"episode" json:"episode"`
-	StreamedOn  string `db:"streamed_on" json:"streamed_on"`
+	ID           int64  `db:"id" json:"id"`
+	Title        string `db:"title" json:"title"`
+	Description  string `db:"description" json:"description"`
+	Filename     string `db:"file_name" json:"filename"`
+	Season       int64  `db:"season" json:"season"`
+	Episode      int64  `db:"episode" json:"episode"`
+	StreamedOn   string `db:"streamed_on" json:"streamed_on"`
+	HasSubtitles bool   `db:"has_subtitles" json:"has_subtitles"`
 }
 
 type PodcastDuration struct {
