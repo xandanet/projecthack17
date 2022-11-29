@@ -32,8 +32,9 @@ type SearchSegmentDTO struct {
 }
 
 type SearchSegmentInput struct {
-	SegmentId int64 `json:"segmentId" db:"segment_id" form:"segment_id" validate:"required"`
-	SearchId  int64 `json:"searchId" db:"search_id" form:"search_id" validate:"required"`
+	SegmentId int64  `json:"segment_id" db:"segment_id" form:"segment_id" validate:"required"`
+	SearchId  int64  `json:"search_id" db:"search_id" form:"search_id" validate:"required"`
+	IpAddress string `json:"ip_address" db:"ip_address" form:"ip_address" validate:"required"`
 }
 
 type SearchSegmentOutput struct {
@@ -43,4 +44,12 @@ type SearchSegmentOutput struct {
 	ClickCount   int64  `db:"click_count"`
 	FirstClicked string `db:"first_clicked"`
 	LastClicked  string `db:"last_clicked"`
+}
+
+type SearchLogInput struct {
+	SearchId  int64  ` db:"search_id"`
+	IpAddress string ` db:"ip_address"`
+	Region    string ` db:"region"`
+	City      string ` db:"city"`
+	Country   string ` db:"country"`
 }

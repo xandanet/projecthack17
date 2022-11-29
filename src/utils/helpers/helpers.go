@@ -2,6 +2,9 @@ package helpers
 
 import (
 	"fmt"
+	"github.com/oschwald/geoip2-golang"
+	"log"
+	"net"
 	"reflect"
 	"strconv"
 	"strings"
@@ -112,4 +115,20 @@ func ConvertStructToMap(in interface{}, tag string) (map[string]interface{}, err
 		}
 	}
 	return out, nil
+}
+
+func GetLocationFromIp(ipAddress string) *geoip2.City {
+	db, err := geoip2.Open("GeoLite2-City.mmdb")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	// If you are using strings that may be invalid, check that ip is not nil
+	ip := net.ParseIP("81.2.69.142")
+	record, err := db.City(ip)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return record
 }

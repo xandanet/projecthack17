@@ -22,4 +22,6 @@ const (
 	queryCreateSearchSubtitle = `INSERT INTO search_segment (segment_id,search_id) VALUES (:segment_id,:search_id)`
 
 	queryUpdateCount = `UPDATE search_segment SET click_count = click_count+1 WHERE segment_id = ? AND search_id = ?`
+
+	queryCreateLog = `INSERT INTO search_log (search_id,ip,region,city,country) VALUES (:search_id,:ip_address,:region,:city,:country)`
 )

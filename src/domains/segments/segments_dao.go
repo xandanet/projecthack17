@@ -147,5 +147,28 @@ func (d *segmentDao) CreateSearchLog(input *SearchSegmentInput) (*SearchSegmentO
 			return nil, err
 		}
 	}
+
+	ipLocation := helpers.GetLocationFromIp(input.IpAddress)
+
+	searchInput := SearchLogInput{
+		SearchId:  input.SearchId,
+		IpAddress: input.IpAddress,
+		Region:    ipLocation.Postal.Code,
+		City:      ipLocation.City.Names["en"],
+		Country:   ipLocation.Country.Names["en"],
+	}
+	fmt.Println(searchInput)
+	qMap, err := helpers.ConvertStructToMap(searchInput, "db")
+	if err != nil {
+		zlog.Logger.Error(fmt.Sprintf("SegmentDao=>Create: %s", err))
+		return nil, err
+	}
+
+	_, err = mysql.Client.NamedExec(queryCreateLog, qMap)
+	if err != nil {
+		zlog.Logger.Error(fmt.Sprintf("SegmentDao=>Create: %s", err))
+		return nil, err
+	}
+
 	return &searchSegment, nil
 }
