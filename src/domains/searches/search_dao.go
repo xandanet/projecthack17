@@ -113,7 +113,7 @@ func (s searchDao) TopSearches() ([]TopSearchesOutput, error) {
 	var results []TopSearchesOutput
 
 	// Get the records
-	if err := mysql.Client.Select(&results, queryTopSegmentFromSearch, 20); err != nil {
+	if err := mysql.Client.Select(&results, queryTopSegmentFromSearch); err != nil {
 		if err != sql.ErrNoRows {
 			zlog.Logger.Error(fmt.Sprintf("SearchDao=>TopSearches=>Select: %s", err))
 			return nil, err

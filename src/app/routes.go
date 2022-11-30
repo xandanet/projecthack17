@@ -92,11 +92,11 @@ func (app *App) SetupRoutes() {
 	}
 
 	v1Routes.GET("fake-locations", func(context *gin.Context) {
-		regions := []string{"Avon", "Bedfordshire", "Berkshire", "Buckinghamshire", "Cambridgeshire", "Cheshire", "Cleveland", "Cornwall", "Cumbria", "Derbyshire", "Devon", "Dorset", "Durham", "East-Sussex", "Essex", "Gloucestershire", "Hampshire", "Herefordshire", "Hertfordshire", "Isle-of-Wight", "Kent", "Lancashire", "Leicestershire", "Lincolnshire", "London", "Merseyside", "Middlesex", "Norfolk", "Northamptonshire", "Northumberland", "North-Humberside", "North-Yorkshire", "Nottinghamshire", "Oxfordshire", "Rutland", "Shropshire", "Somerset", "South-Humberside", "South-Yorkshire", "Staffordshire", "Suffolk", "Surrey", "Tyne-and-Wear", "Warwickshire", "West-Midlands", "West-Sussex", "West-Yorkshire", "Wiltshire", "Worcestershire"}
+		regions := []string{"United Kingdom", "Portugal", "Germany", "Spain", "Italy", "France", "United States", "Mexico", "Brasil"}
 		startDate := time.Date(2022, 11, 1, 0, 0, 0, 0, time.UTC)
-		for i := 0; i < 1000000; i++ {
+		for i := 0; i < 50000; i++ {
 			_, err = mysql.Client.Exec(`INSERT INTO search_log(search_id, ip, region, city, country, search_date) 
-    					VALUES (1, "127.0.0.1", "", ?, "United Kingdom", ?)`, regions[rand.Int63n(int64(len(regions)))], startDate.Format("2006-01-02 15:04:05"))
+    					VALUES (1, "127.0.0.1", "", "City", ?, ?)`, regions[rand.Int63n(int64(len(regions)))], startDate.Format("2006-01-02 15:04:05"))
 			if err != nil {
 				fmt.Println(err)
 			}
