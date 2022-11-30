@@ -74,6 +74,7 @@ func (app *App) SetupRoutes() {
 		podcastRoutes.POST("/bookmark", controllers.PodcastController.BookMark)
 		podcastRoutes.GET("/bookmark", controllers.PodcastController.GetBookMark)
 		podcastRoutes.GET("/top-searches", controllers.SegmentController.TopSearches)
+		podcastRoutes.GET("/top-searches-no-result", controllers.SegmentController.TopSearchesNoResult)
 	}
 
 	//Plays

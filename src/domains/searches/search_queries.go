@@ -20,5 +20,7 @@ const (
 	GROUP BY segment_id ORDER BY total DESC LIMIT ?`*/
 	queryTopSegmentFromSearch = `SELECT SUM(search_count) AS total, text FROM search GROUP BY text ORDER BY total DESC LIMIT 20;`
 
+	queryTopSegmentNoResultFromSearch = `SELECT SUM(search_count) AS total, text FROM search WHERE has_result=0 GROUP BY text ORDER BY total DESC LIMIT 20;`
+
 	queryGetSearchLocations = `SELECT city, country, count(*) AS searches FROM search_log GROUP BY country ORDER BY searches DESC LIMIT 10`
 )

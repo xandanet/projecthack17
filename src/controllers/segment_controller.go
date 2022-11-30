@@ -15,6 +15,7 @@ type segmentControllerInterface interface {
 	SearchGenerator(ctx *gin.Context)
 	Statistics(ctx *gin.Context)
 	TopSearches(ctx *gin.Context)
+	TopSearchesNoResult(ctx *gin.Context)
 }
 
 type segmentController struct{}
@@ -120,6 +121,20 @@ func (c *segmentController) Statistics(ctx *gin.Context) {
 
 func (c *segmentController) TopSearches(ctx *gin.Context) {
 	result, err := services.SegmentService.TopSearches()
+
+	if err != nil {
+		ctx.JSON(err.Code(), err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, utils.NoErrorData{
+		Data: result,
+		Code: http.StatusOK,
+	})
+}
+
+func (c *segmentController) TopSearchesNoResult(ctx *gin.Context) {
+	result, err := services.SegmentService.TopSearchesNoResult()
 
 	if err != nil {
 		ctx.JSON(err.Code(), err)

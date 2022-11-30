@@ -24,6 +24,7 @@ type SegmentServiceI interface {
 	SearchGenerator() utils.RestErrorI
 	Statistics() ([]searches.SearchDTO, utils.RestErrorI)
 	TopSearches() ([]searches.TopSearchesOutput, utils.RestErrorI)
+	TopSearchesNoResult() ([]searches.TopSearchesOutput, utils.RestErrorI)
 }
 
 type segmentService struct{}
@@ -210,6 +211,14 @@ func (s *segmentService) Statistics() ([]searches.SearchDTO, utils.RestErrorI) {
 }
 
 func (s *segmentService) TopSearches() ([]searches.TopSearchesOutput, utils.RestErrorI) {
+	result, err := searches.SearchDao.TopSearches()
+	if err != nil {
+		return nil, utils.NewInternalServerError("SEARCH_STATISTICS_NOT_FOUND")
+	}
+	return result, nil
+}
+
+func (s *segmentService) TopSearchesNoResult() ([]searches.TopSearchesOutput, utils.RestErrorI) {
 	result, err := searches.SearchDao.TopSearches()
 	if err != nil {
 		return nil, utils.NewInternalServerError("SEARCH_STATISTICS_NOT_FOUND")

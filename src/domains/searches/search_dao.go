@@ -14,6 +14,7 @@ type SearchDaoI interface {
 	CreateOrUpdate(text string, sentiment string, resultCount int64) (int64, error)
 	List() ([]SearchDTO, error)
 	TopSearches() ([]TopSearchesOutput, error)
+	TopSearchesNoResult() ([]TopSearchesOutput, error)
 	ListLocations() ([]SearchLocationsOutput, error)
 }
 type searchDao struct{}
@@ -130,6 +131,21 @@ func (s searchDao) ListLocations() ([]SearchLocationsOutput, error) {
 	if err := mysql.Client.Select(&results, queryGetSearchLocations); err != nil {
 		if err != sql.ErrNoRows {
 			zlog.Logger.Error(fmt.Sprintf("SearchDao=>SearchLocations=>Select: %s", err))
+			return nil, err
+		}
+		return nil, nil
+	}
+
+	return results, nil
+}
+
+func (s searchDao) TopSearchesNoResult() ([]TopSearchesOutput, error) {
+	var results []TopSearchesOutput
+
+	// Get the records
+	if err := mysql.Client.Select(&results, queryTopSegmentNoResultFromSearch); err != nil {
+		if err != sql.ErrNoRows {
+			zlog.Logger.Error(fmt.Sprintf("SearchDao=>TopSearches=>Select: %s", err))
 			return nil, err
 		}
 		return nil, nil
