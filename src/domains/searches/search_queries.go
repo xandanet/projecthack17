@@ -18,7 +18,7 @@ const (
 	LEFT JOIN segment ON segment.id = segment_id
 	LEFT JOIN pods ON pods.id = pod_id
 	GROUP BY segment_id ORDER BY total DESC LIMIT ?`*/
-	queryTopSegmentFromSearch = `SELECT SUM(search_count) AS total, text FROM search GROUP BY text ORDER BY total DESC LIMIT 20;`
+	queryTopSegmentFromSearch = `SELECT SUM(search_count) AS total, text FROM search  WHERE has_result=1 GROUP BY text ORDER BY total DESC LIMIT 20;`
 
 	queryTopSegmentNoResultFromSearch = `SELECT SUM(search_count) AS total, text FROM search WHERE has_result=0 GROUP BY text ORDER BY total DESC LIMIT 20;`
 
