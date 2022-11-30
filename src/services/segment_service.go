@@ -219,7 +219,7 @@ func (s *segmentService) TopSearches() ([]searches.TopSearchesOutput, utils.Rest
 }
 
 func (s *segmentService) TopSearchesNoResult() ([]searches.TopSearchesOutput, utils.RestErrorI) {
-	result, err := searches.SearchDao.TopSearches()
+	result, err := searches.SearchDao.TopSearchesNoResult()
 	if err != nil {
 		return nil, utils.NewInternalServerError("SEARCH_STATISTICS_NOT_FOUND")
 	}
