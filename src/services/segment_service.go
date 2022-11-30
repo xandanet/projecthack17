@@ -60,8 +60,7 @@ func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.S
 	}
 
 	if len(naturalResult) > 0 {
-		searchId, err := searches.SearchDao.CreateOrUpdate(input.Text, sentimentText)
-
+		searchId, err := searches.SearchDao.CreateOrUpdate(input.Text, sentimentText, int64(len(naturalResult)))
 		if err == nil {
 			return &segments.SearchSegmentDTO{
 				SearchID:   searchId,
@@ -95,7 +94,7 @@ func (s *segmentService) Search(input *segments.SegmentSearchInput) (*segments.S
 		return results[i].Similarity > results[j].Similarity
 	})
 
-	searchId, err := searches.SearchDao.CreateOrUpdate(input.Text, sentimentText)
+	searchId, err := searches.SearchDao.CreateOrUpdate(input.Text, sentimentText, 0)
 	return &segments.SearchSegmentDTO{
 		SearchID:   searchId,
 		SegmentDTO: results,

@@ -3,7 +3,9 @@ package searches
 const (
 	queryList = `SELECT id, text, search_count, last_searched FROM search;`
 
-	queryCreate = `INSERT INTO search (text, sentiment) VALUES (:text, :sentiment)`
+	queryCreate = `INSERT INTO search (text, sentiment,has_result) VALUES (:text, :sentiment,1)`
+
+	queryCreateNoResult = `INSERT INTO search (text, sentiment) VALUES (:text, :sentiment)`
 
 	queryUpdateCount = `UPDATE search SET search_count = search_count+1 WHERE text = ?`
 

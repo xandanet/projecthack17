@@ -11,9 +11,8 @@ import (
 type SearchDaoI interface {
 	GetByID(id int64) (*SearchDTO, error)
 	Find(text string) (*SearchDTO, error)
-	CreateOrUpdate(text string, sentiment string) (int64, error)
+	CreateOrUpdate(text string, sentiment string, resultCount int64) (int64, error)
 	List() ([]SearchDTO, error)
-
 	TopSearches() ([]TopSearchesOutput, error)
 	ListLocations() ([]SearchLocationsOutput, error)
 }
@@ -49,15 +48,16 @@ func (s searchDao) Find(text string) (*SearchDTO, error) {
 	return &search, nil
 }
 
-func (s searchDao) CreateOrUpdate(text string, sentiment string) (int64, error) {
+func (s searchDao) CreateOrUpdate(text string, sentiment string, resultCount int64) (int64, error) {
 	var search SearchDTO
 	err := mysql.Client.Get(&search, queryFind, text)
 
 	if err == sql.ErrNoRows {
 
 		searchInput := SearchInput{
-			Text:      text,
-			Sentiment: sentiment,
+			Text:        text,
+			Sentiment:   sentiment,
+			ResultCount: resultCount,
 		}
 
 		qMap, err := helpers.ConvertStructToMap(searchInput, "db")
@@ -65,8 +65,13 @@ func (s searchDao) CreateOrUpdate(text string, sentiment string) (int64, error) 
 			zlog.Logger.Error(fmt.Sprintf("CreateDao=>Create: %s", err))
 			return 0, err
 		}
-
-		row, err := mysql.Client.NamedExec(queryCreate, qMap)
+		var searchQuery string
+		if resultCount == 0 {
+			searchQuery = queryCreateNoResult
+		} else {
+			searchQuery = queryCreate
+		}
+		row, err := mysql.Client.NamedExec(searchQuery, qMap)
 		if err != nil {
 			zlog.Logger.Error(fmt.Sprintf("CreateDao=>Create: %s", err))
 			return 0, err

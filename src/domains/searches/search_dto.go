@@ -8,8 +8,9 @@ type SearchDTO struct {
 }
 
 type SearchInput struct {
-	Text      string `db:"text"`
-	Sentiment string `db:"sentiment"`
+	Text        string `db:"text"`
+	Sentiment   string `db:"sentiment"`
+	ResultCount int64  `db:"result_count"`
 }
 
 type TopSearchesOutput struct {
